@@ -1,6 +1,7 @@
 package nz.ac.auckland.se206.controllers;
 
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,6 +25,8 @@ public class ChatController {
   @FXML private Button sendButton;
   @FXML private Label timerLabel2;
 
+  private Timer timer;
+
   private ChatCompletionRequest chatCompletionRequest;
 
   /**
@@ -36,6 +39,26 @@ public class ChatController {
     chatCompletionRequest =
         new ChatCompletionRequest().setN(1).setTemperature(0.2).setTopP(0.5).setMaxTokens(100);
     runGpt(new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("computer")));
+
+    timer = GameState.timer;
+
+    // Update the timer label every second
+    Task<Void> updateLabelTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            while (!GameState.isTimeReached) {
+              Thread.sleep(1000); // Wait for 1 second
+              Platform.runLater(() -> updateLabel());
+            }
+            return null;
+          }
+        };
+
+    // Create a new thread for the update task and start it
+    Thread updateThread = new Thread(updateLabelTask);
+    updateThread.setDaemon(true);
+    updateThread.start();
   }
 
   /**
@@ -110,5 +133,10 @@ public class ChatController {
   @FXML
   private void onGoBack(ActionEvent event) throws ApiProxyException, IOException {
     App.setRoot("room");
+  }
+
+  private void updateLabel() {
+    timerLabel2.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
   }
 }
