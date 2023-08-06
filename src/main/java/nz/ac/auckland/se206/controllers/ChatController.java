@@ -1,9 +1,11 @@
 package nz.ac.auckland.se206.controllers;
 
 import java.io.IOException;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import nz.ac.auckland.se206.App;
@@ -20,6 +22,7 @@ public class ChatController {
   @FXML private TextArea chatTextArea;
   @FXML private TextField inputText;
   @FXML private Button sendButton;
+  @FXML private Label timerLabel2;
 
   private ChatCompletionRequest chatCompletionRequest;
 
@@ -51,19 +54,28 @@ public class ChatController {
    * @return the response chat message
    * @throws ApiProxyException if there is an error communicating with the API proxy
    */
-  private ChatMessage runGpt(ChatMessage msg) throws ApiProxyException {
-    chatCompletionRequest.addMessage(msg);
-    try {
-      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
-      Choice result = chatCompletionResult.getChoices().iterator().next();
-      chatCompletionRequest.addMessage(result.getChatMessage());
-      appendChatMessage(result.getChatMessage());
-      return result.getChatMessage();
-    } catch (ApiProxyException e) {
-      // TODO handle exception appropriately
-      e.printStackTrace();
-      return null;
-    }
+  private void runGpt(ChatMessage msg) {
+    Task<Void> backgroundTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            chatCompletionRequest.addMessage(msg);
+            try {
+              ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
+              Choice result = chatCompletionResult.getChoices().iterator().next();
+              chatCompletionRequest.addMessage(result.getChatMessage());
+              appendChatMessage(result.getChatMessage());
+            } catch (ApiProxyException e) {
+              // TODO handle exception appropriately
+              e.printStackTrace();
+            }
+            return null;
+          }
+        };
+
+    // Execute the background task in a new thread
+    Thread thread = new Thread(backgroundTask);
+    thread.start();
   }
 
   /**
@@ -82,8 +94,8 @@ public class ChatController {
     inputText.clear();
     ChatMessage msg = new ChatMessage("user", message);
     appendChatMessage(msg);
-    ChatMessage lastMsg = runGpt(msg);
-    if (lastMsg.getRole().equals("assistant") && lastMsg.getContent().startsWith("Correct")) {
+    runGpt(msg);
+    if (msg.getRole().equals("assistant") && msg.getContent().startsWith("Correct")) {
       GameState.isRiddleResolved = true;
     }
   }

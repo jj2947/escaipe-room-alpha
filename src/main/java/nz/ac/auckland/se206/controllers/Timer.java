@@ -1,6 +1,5 @@
 package nz.ac.auckland.se206.controllers;
 
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 
@@ -15,6 +14,7 @@ public class Timer {
 
   private void startTimer() {
     counter = 120; // Set the initial value of the counter to 2 minutes (120 seconds)
+    updateLabel();
 
     Task<Void> backgroundTask =
         new Task<Void>() {
@@ -25,17 +25,12 @@ public class Timer {
             while (counter > 0) {
               Thread.sleep(1000); // Wait for 1 second
               counter--;
-              Platform.runLater(
-                  () -> {
-                    updateLabel();
-                  });
             }
 
             return null;
           }
         };
 
-    
     // Create a new thread for the countdown and start it
     Thread countdownThread = new Thread(backgroundTask);
     countdownThread.start();
@@ -45,7 +40,11 @@ public class Timer {
     timerLabel.setText(String.format("%02d:%02d", counter / 60, counter % 60));
   }
 
-  public Label getTimerLabel() {
-    return timerLabel;
+  public int getCounter() {
+    return counter;
+  }
+
+  public Timer getTimer() {
+    return this;
   }
 }

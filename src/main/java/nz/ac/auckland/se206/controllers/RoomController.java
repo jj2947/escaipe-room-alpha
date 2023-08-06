@@ -1,6 +1,8 @@
 package nz.ac.auckland.se206.controllers;
 
 import java.io.IOException;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -17,6 +19,7 @@ public class RoomController {
   @FXML private Rectangle window;
   @FXML private Rectangle computer;
   @FXML private Label timerLabel;
+  private Timer timer;
 
   /** Initializes the room view, it is called when the room loads. */
   public void initialize() {
@@ -24,12 +27,30 @@ public class RoomController {
 
     // Start the timer
     if (!GameState.isGameStarted) {
-      Timer timer = new Timer(timerLabel);
+      timer = new Timer(timerLabel);
       GameState.timer = timer;
       GameState.isGameStarted = true;
     }
 
-    timerLabel = GameState.timer.getTimerLabel();
+    timer = GameState.timer;
+
+    // Update the timer label every second
+    Task<Void> updateLabelTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            while (!GameState.isTimeReached) {
+              Thread.sleep(1000); // Wait for 1 second
+              Platform.runLater(() -> updateLabel());
+            }
+            return null;
+          }
+        };
+
+    // Create a new thread for the update task and start it
+    Thread updateThread = new Thread(updateLabelTask);
+    updateThread.setDaemon(true);
+    updateThread.start();
   }
 
   /**
@@ -114,5 +135,9 @@ public class RoomController {
   @FXML
   public void clickWindow(MouseEvent event) {
     System.out.println("window clicked");
+  }
+
+  private void updateLabel() {
+    timerLabel.setText(String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
   }
 }
