@@ -1,11 +1,16 @@
 package nz.ac.auckland.se206.controllers;
 
 import java.io.IOException;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import nz.ac.auckland.se206.App;
 import nz.ac.auckland.se206.GameState;
 
@@ -14,11 +19,21 @@ public class RoomController {
 
   @FXML private Rectangle door;
   @FXML private Rectangle window;
-  @FXML private Rectangle vase;
+  @FXML private Rectangle computer;
+  @FXML private Label timerLabel;
+
+  private Timeline timeline;
+  private int counter;
 
   /** Initializes the room view, it is called when the room loads. */
   public void initialize() {
     // Initialization code goes here
+    counter = 120; // Set the initial value of the counter to 2 minutes (120 seconds)
+
+    // Create the timeline and configure it to update every second
+    timeline = new Timeline(new KeyFrame(Duration.seconds(1), this::updateTimer));
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    timeline.play();
   }
 
   /**
@@ -81,15 +96,15 @@ public class RoomController {
   }
 
   /**
-   * Handles the click event on the vase.
+   * Handles the click event on the computer.
    *
    * @param event the mouse event
    */
   @FXML
-  public void clickVase(MouseEvent event) {
-    System.out.println("vase clicked");
+  public void clickComputer(MouseEvent event) {
+    System.out.println("computer clicked");
     if (GameState.isRiddleResolved && !GameState.isKeyFound) {
-      showDialog("Info", "Key Found", "You found a key under the vase!");
+      showDialog("Info", "Key Found", "You found a key under the computer!");
       GameState.isKeyFound = true;
     }
   }
@@ -102,5 +117,21 @@ public class RoomController {
   @FXML
   public void clickWindow(MouseEvent event) {
     System.out.println("window clicked");
+  }
+
+  private void updateTimer(ActionEvent event) {
+    if (counter > 0) {
+      counter--;
+      updateLabel();
+    } else {
+      // Timer has reached 0, handle the end of the countdown here
+      // For example, you can stop the timeline or trigger some action
+      GameState.isTimeReached = true;
+      timeline.stop(); // Stop the timer when it reaches 0
+    }
+  }
+
+  private void updateLabel() {
+    timerLabel.setText(String.format("%02d:%02d", counter / 60, counter % 60));
   }
 }
