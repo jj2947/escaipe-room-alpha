@@ -88,6 +88,11 @@ public class ChatController {
               Choice result = chatCompletionResult.getChoices().iterator().next();
               chatCompletionRequest.addMessage(result.getChatMessage());
               appendChatMessage(result.getChatMessage());
+              // Check if the assistant's response contains "Correct"
+              if (result.getChatMessage().getRole().equals("assistant")
+                  && result.getChatMessage().getContent().startsWith("Correct")) {
+                GameState.isRiddleResolved = true;
+              }
             } catch (ApiProxyException e) {
               // TODO handle exception appropriately
               e.printStackTrace();
@@ -118,9 +123,6 @@ public class ChatController {
     ChatMessage msg = new ChatMessage("user", message);
     appendChatMessage(msg);
     runGpt(msg);
-    if (msg.getRole().equals("assistant") && msg.getContent().startsWith("Correct")) {
-      GameState.isRiddleResolved = true;
-    }
   }
 
   /**

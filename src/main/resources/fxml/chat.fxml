@@ -13,7 +13,7 @@
     <TextField fx:id="inputText" layoutX="35.0" layoutY="341.0" prefHeight="26.0" prefWidth="435.0" />
     <Button fx:id="sendButton" layoutX="505.0" layoutY="335.0" mnemonicParsing="false" onAction="#onSendMessage" text="Send" />
     <Button layoutX="505.0" layoutY="367.0" mnemonicParsing="false" onAction="#onGoBack" text="Go Back" />
-      <Label fx:id="timerLabel2" layoutX="482.0" layoutY="26.0" prefHeight="34.0" prefWidth="99.0" text="2:00">
+      <Label fx:id="timerLabel2" layoutX="482.0" layoutY="26.0" prefHeight="34.0" prefWidth="99.0">
          <font>
             <Font size="30.0" />
          </font>
