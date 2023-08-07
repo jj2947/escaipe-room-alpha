@@ -4,13 +4,15 @@ import java.io.IOException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
-import nz.ac.auckland.se206.App;
 import nz.ac.auckland.se206.GameState;
+import nz.ac.auckland.se206.SceneManager;
+import nz.ac.auckland.se206.SceneManager.AppUi;
 
 /** Controller class for the room view. */
 public class RoomController {
@@ -100,7 +102,9 @@ public class RoomController {
 
     if (!GameState.isRiddleResolved) {
       showDialog("Info", "Riddle", "You need to resolve the riddle!");
-      App.setRoot("chat");
+      Rectangle rectangle = (Rectangle) event.getSource();
+      Scene sceneRectangleIsIn = rectangle.getScene();
+      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
       return;
     }
 
@@ -138,6 +142,7 @@ public class RoomController {
   }
 
   private void updateLabel() {
-    timerLabel.setText(String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+    timerLabel.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
   }
 }
