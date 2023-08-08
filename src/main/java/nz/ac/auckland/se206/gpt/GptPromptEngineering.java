@@ -21,17 +21,17 @@ public class GptPromptEngineering {
   }
 
   public static String getDoorHint() {
-    return "You are the gamemaster of an escape room. In 10 words or tell the player to click on"
-               + " the door to win";
+    return "You are the gamemaster of an escape room. In 15 words or less tell the player to click"
+        + " on the door to finish the game";
   }
 
   public static String getKeyHint() {
-    return "You are the gamemaster of an escape room. In 10 words or tell user that"
-        + " they need to use the  they solved to find the key to escape";
+    return "You are the gamemaster of an escape room. In 15 words or less tell user  they need to"
+        + " use the riddle they solved to find the key to escape. Don't mention the door";
   }
 
   public static String getStartHint() {
-    return "You are the gamemaster of an escape room. In 10 words or tell user that"
+    return "You are the gamemaster of an escape room. In 15 words or less tell user that"
         + " they need to click on the door to start";
   }
 }
