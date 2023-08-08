@@ -3,9 +3,11 @@ package nz.ac.auckland.se206.controllers;
 import java.io.IOException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -13,6 +15,12 @@ import javafx.scene.shape.Rectangle;
 import nz.ac.auckland.se206.GameState;
 import nz.ac.auckland.se206.SceneManager;
 import nz.ac.auckland.se206.SceneManager.AppUi;
+import nz.ac.auckland.se206.gpt.ChatMessage;
+import nz.ac.auckland.se206.gpt.GptPromptEngineering;
+import nz.ac.auckland.se206.gpt.openai.ApiProxyException;
+import nz.ac.auckland.se206.gpt.openai.ChatCompletionRequest;
+import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult;
+import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult.Choice;
 
 /** Controller class for the room view. */
 public class RoomController {
@@ -22,12 +30,18 @@ public class RoomController {
   @FXML private Rectangle computer;
   @FXML private Label timerLabel;
   @FXML private Label chatLabel;
+  @FXML private Button helpButton;
   private Timer timer;
+  private int currentSentenceIndex = 0;
+  private long sentenceDelay = 5; // Change this delay in seconds as needed
+  private ChatCompletionRequest chatCompletionRequest;
+  Thread chatThread;
 
   /** Initializes the room view, it is called when the room loads. */
   public void initialize() {
     // Initialization code goes here
-
+    chatCompletionRequest =
+        new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(1).setMaxTokens(25);
     // Start the timer
     timer = new Timer(timerLabel);
     GameState.timer = timer;
@@ -52,6 +66,31 @@ public class RoomController {
     Thread updateThread = new Thread(updateLabelTask);
     updateThread.setDaemon(true);
     updateThread.start();
+
+    // Set up and start the chatLabel task
+    Task<Void> chatTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            while (!Thread.currentThread().isInterrupted()) {
+              String sentence = chatSentences[currentSentenceIndex];
+              Platform.runLater(() -> chatLabel.setText(sentence));
+
+              if (currentSentenceIndex < chatSentences.length - 1) {
+                currentSentenceIndex++;
+              } else {
+                Thread.sleep(120000);
+              }
+
+              Thread.sleep(sentenceDelay * 1000);
+            }
+            return null;
+          }
+        };
+
+    chatThread = new Thread(chatTask);
+    chatThread.setDaemon(true);
+    chatThread.start();
   }
 
   /**
@@ -104,6 +143,7 @@ public class RoomController {
       Rectangle rectangle = (Rectangle) event.getSource();
       Scene sceneRectangleIsIn = rectangle.getScene();
       sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
+      chatLabel.setText("");
       return;
     }
 
@@ -152,6 +192,16 @@ public class RoomController {
     }
   }
 
+  @FXML
+  public void clickHelpButton(ActionEvent event) {
+    System.out.println("help button clicked");
+
+    // Disable the help button temporarily to prevent multiple clicks
+    helpButton.setDisable(true);
+
+  
+  }
+
   private void switchToGameOverScene() {
 
     Scene currentScene = timerLabel.getScene();
@@ -160,4 +210,10 @@ public class RoomController {
           currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
         });
   }
+
+  private String[] chatSentences = {
+    "Welcome to the escape room!", "You have 2 minutes to escape the room.", ""
+  };
+
+  
 }
