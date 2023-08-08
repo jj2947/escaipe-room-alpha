@@ -176,6 +176,20 @@ public class ChatController {
         () -> {
           timerLabel2.setText(
               String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+
+          if (GameState.isTimeReached) {
+            // Timer has reached zero, switch to the desired scene
+            switchToGameOverScene();
+          }
+        });
+  }
+
+  private void switchToGameOverScene() {
+    // Get the root of the game over scene and set it as the new root
+    Scene currentScene = timerLabel2.getScene();
+    Platform.runLater(
+        () -> {
+          currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
         });
   }
 
