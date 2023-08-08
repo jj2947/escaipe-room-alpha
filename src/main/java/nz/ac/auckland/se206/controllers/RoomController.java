@@ -29,11 +29,9 @@ public class RoomController {
     // Initialization code goes here
 
     // Start the timer
-    if (!GameState.isGameStarted) {
-      timer = new Timer(timerLabel);
-      GameState.timer = timer;
-      GameState.isGameStarted = true;
-    }
+    timer = new Timer(timerLabel);
+    GameState.timer = timer;
+    GameState.isGameStarted = true;
 
     timer = GameState.timer;
 
@@ -102,7 +100,7 @@ public class RoomController {
     System.out.println("door clicked");
 
     if (!GameState.isRiddleResolved) {
-      //showDialog("Info", "Riddle", "You need to resolve the riddle!");
+      // showDialog("Info", "Riddle", "You need to resolve the riddle!");
       Rectangle rectangle = (Rectangle) event.getSource();
       Scene sceneRectangleIsIn = rectangle.getScene();
       sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
@@ -110,11 +108,13 @@ public class RoomController {
     }
 
     if (!GameState.isKeyFound) {
-      showDialog(
-          "Info", "Find the key!", "You resolved the riddle, now you know where the key is.");
+      showDialog("Info", "Find the key!", "You solved the riddle, now you know where the key is.");
     } else {
       GameState.isTimeReached = true;
-      showDialog("Info", "You Won!", "Good Job!");
+      GameState.isGameStarted = false;
+      Rectangle rectangle = (Rectangle) event.getSource();
+      Scene sceneRectangleIsIn = rectangle.getScene();
+      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.ESCAPED));
     }
   }
 
@@ -145,5 +145,19 @@ public class RoomController {
   private void updateLabel() {
     timerLabel.setText(
         String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+
+    if (GameState.isTimeReached) {
+      // Timer has reached zero, switch to the desired scene
+      switchToGameOverScene();
+    }
+  }
+
+  private void switchToGameOverScene() {
+
+    Scene currentScene = timerLabel.getScene();
+    Platform.runLater(
+        () -> {
+          currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+        });
   }
 }
