@@ -40,27 +40,43 @@ public class ChatController {
   public void initialize() throws ApiProxyException {
     chatCompletionRequest =
         new ChatCompletionRequest().setN(1).setTemperature(0.2).setTopP(0.5).setMaxTokens(100);
-    runGpt(new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("computer")));
+    chatTextArea.setEditable(false);
 
-    timer = GameState.timer;
-
-    // Update the timer label every second
-    Task<Void> updateLabelTask =
+    Task<Void> initializeTask =
         new Task<Void>() {
           @Override
           protected Void call() throws Exception {
-            while (!GameState.isTimeReached) {
-              Thread.sleep(1000); // Wait for 1 second
-              Platform.runLater(() -> updateLabel());
-            }
+            // Your initialization code here
+            runGpt(
+                new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("computer")));
+            timer = GameState.timer;
+
+            // Update the timer label every second
+            Task<Void> updateLabelTask =
+                new Task<Void>() {
+                  @Override
+                  protected Void call() throws Exception {
+                    while (!GameState.isTimeReached) {
+                      Thread.sleep(1000); // Wait for 1 second
+                      Platform.runLater(() -> updateLabel());
+                    }
+                    return null;
+                  }
+                };
+
+            // Create a new thread for the update task and start it
+            Thread updateThread = new Thread(updateLabelTask);
+            updateThread.setDaemon(true);
+            updateThread.start();
+
             return null;
           }
         };
 
-    // Create a new thread for the update task and start it
-    Thread updateThread = new Thread(updateLabelTask);
-    updateThread.setDaemon(true);
-    updateThread.start();
+    // Create a new thread for the initialization task and start it
+    Thread initializeThread = new Thread(initializeTask);
+    initializeThread.setDaemon(true);
+    initializeThread.start();
   }
 
   /**
@@ -69,7 +85,7 @@ public class ChatController {
    * @param msg the chat message to append
    */
   private void appendChatMessage(ChatMessage msg) {
-    chatTextArea.appendText(msg.getRole() + ": " + msg.getContent() + "\n\n");
+    chatTextArea.appendText(msg.getContent() + "\n\n");
   }
 
   /**
@@ -80,6 +96,7 @@ public class ChatController {
    * @throws ApiProxyException if there is an error communicating with the API proxy
    */
   private void runGpt(ChatMessage msg) {
+
     Task<Void> backgroundTask =
         new Task<Void>() {
           @Override
@@ -105,6 +122,7 @@ public class ChatController {
 
     // Execute the background task in a new thread
     Thread thread = new Thread(backgroundTask);
+    thread.setDaemon(true);
     thread.start();
   }
 
@@ -124,6 +142,9 @@ public class ChatController {
     inputText.clear();
     ChatMessage msg = new ChatMessage("user", message);
     appendChatMessage(msg);
+
+    chatTextArea.setEditable(false);
+
     runGpt(msg);
   }
 
