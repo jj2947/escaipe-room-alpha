@@ -22,9 +22,9 @@
       <Rectangle fx:id="computer" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="112.0" layoutX="656.0" layoutY="288.0" onMouseClicked="#clickComputer" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="173.0" />
       <Rectangle fx:id="window" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="119.0" layoutX="468.0" layoutY="277.0" onMouseClicked="#clickWindow" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="135.0" />
       <Rectangle fx:id="door" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="513.0" layoutX="62.0" layoutY="39.0" onMouseClicked="#clickDoor" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="335.0" />
-      <Label fx:id="chatLabel" alignment="CENTER" layoutX="16.0" layoutY="622.0" prefHeight="72.0" prefWidth="867.0">
+      <Label fx:id="chatLabel" alignment="CENTER" layoutX="19.0" layoutY="622.0" prefHeight="72.0" prefWidth="867.0" textFill="WHITE">
          <font>
-            <Font size="35.0" />
+            <Font name="Bangla MN" size="40.0" />
          </font>
       </Label>
    </children>

@@ -11,7 +11,7 @@
   <children>
     <TextArea fx:id="chatTextArea" layoutX="108.0" layoutY="59.0" prefHeight="475.0" prefWidth="693.0" wrapText="true">
          <font>
-            <Font name="Trattatello" size="30.0" />
+            <Font name="Trattatello" size="25.0" />
          </font></TextArea>
     <TextField fx:id="inputText" layoutX="106.0" layoutY="563.0" prefHeight="56.0" prefWidth="693.0" promptText="Your Answer...">
          <font>

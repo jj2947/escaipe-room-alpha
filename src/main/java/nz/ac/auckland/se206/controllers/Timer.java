@@ -2,6 +2,7 @@ package nz.ac.auckland.se206.controllers;
 
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
+import nz.ac.auckland.se206.GameState;
 
 public class Timer {
   private int counter;
@@ -22,9 +23,14 @@ public class Timer {
           @Override
           protected Void call() throws Exception {
 
-            while (counter > 0) {
+            while (counter > 0 && !GameState.isTimeReached) {
               Thread.sleep(1000); // Wait for 1 second
               counter--;
+            }
+
+            if (counter == 0) {
+              GameState.isTimeReached = true;
+              GameState.isGameStarted = false;
             }
 
             return null;
