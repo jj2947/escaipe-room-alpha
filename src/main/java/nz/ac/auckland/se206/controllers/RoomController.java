@@ -32,8 +32,6 @@ public class RoomController {
   @FXML private Label chatLabel;
   @FXML private Button helpButton;
   private Timer timer;
-  private int currentSentenceIndex = 0;
-  private long sentenceDelay = 5; // Change this delay in seconds as needed
   private ChatCompletionRequest chatCompletionRequest;
   Thread chatThread;
 
@@ -72,6 +70,7 @@ public class RoomController {
         new Task<Void>() {
           @Override
           protected Void call() throws Exception {
+            int currentSentenceIndex = 0;
             while (!Thread.currentThread().isInterrupted()) {
               String sentence = chatSentences[currentSentenceIndex];
               Platform.runLater(() -> chatLabel.setText(sentence));
@@ -82,7 +81,7 @@ public class RoomController {
                 Thread.sleep(120000);
               }
 
-              Thread.sleep(sentenceDelay * 1000);
+              Thread.sleep(4 * 1000);
             }
             return null;
           }
@@ -142,8 +141,8 @@ public class RoomController {
       // showDialog("Info", "Riddle", "You need to resolve the riddle!");
       Rectangle rectangle = (Rectangle) event.getSource();
       Scene sceneRectangleIsIn = rectangle.getScene();
-      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
       chatLabel.setText("");
+      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
       return;
     }
 
@@ -199,7 +198,31 @@ public class RoomController {
     // Disable the help button temporarily to prevent multiple clicks
     helpButton.setDisable(true);
 
-  
+    // Set the chat label to loading message
+    chatLabel.setText("Loading...");
+
+    // Run the AI chat in the background
+    Task<Void> aiChatTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            try {
+              String helpMessage = getAIHelpMessage(); // Get AI-generated help message
+              Platform.runLater(() -> chatLabel.setText(helpMessage));
+            } catch (Exception e) {
+              e.printStackTrace();
+            } finally {
+              // Re-enable the help button
+              Platform.runLater(() -> helpButton.setDisable(false));
+            }
+            return null;
+          }
+        };
+
+    // Start the AI chat task in a new thread
+    Thread aiChatThread = new Thread(aiChatTask);
+    aiChatThread.setDaemon(true);
+    aiChatThread.start();
   }
 
   private void switchToGameOverScene() {
@@ -212,8 +235,30 @@ public class RoomController {
   }
 
   private String[] chatSentences = {
-    "Welcome to the escape room!", "You have 2 minutes to escape the room.", ""
+    "Welcome to the escape room!", "You have 2 minutes to escape the room.", "If you get stuck, use the Help button!", ""
   };
 
-  
+  private String getAIHelpMessage() {
+    try {
+      // Run the AI chat and get the response
+      if (!GameState.isKeyFound && GameState.isRiddleResolved) {
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getKeyHint()));
+      } else if (GameState.isRiddleResolved && GameState.isKeyFound) {
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getDoorHint()));
+      } else {
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getStartHint()));
+      }
+
+      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
+      Choice result = chatCompletionResult.getChoices().iterator().next();
+      String helpMessage = result.getChatMessage().getContent();
+      return helpMessage;
+    } catch (ApiProxyException e) {
+      e.printStackTrace();
+      return "Sorry, I couldn't retrieve the help message.";
+    }
+  }
 }

@@ -19,4 +19,19 @@ public class GptPromptEngineering {
         + " message that tells the user to go back to room. Only if they ask or guess incorrectly,"
         + " give them a hint. You must never reveal the answer to the player.";
   }
+
+  public static String getDoorHint() {
+    return "You are the gamemaster of an escape room. In 10 words or tell the player to click on"
+               + " the door to win";
+  }
+
+  public static String getKeyHint() {
+    return "You are the gamemaster of an escape room. In 10 words or tell user that"
+        + " they need to use the  they solved to find the key to escape";
+  }
+
+  public static String getStartHint() {
+    return "You are the gamemaster of an escape room. In 10 words or tell user that"
+        + " they need to click on the door to start";
+  }
 }

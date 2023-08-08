@@ -30,7 +30,7 @@
       </Label>
       <Button fx:id="helpButton" layoutX="686.0" layoutY="620.0" mnemonicParsing="false" onAction="#clickHelpButton" prefHeight="33.0" prefWidth="101.0" text="Help">
          <font>
-            <Font name="Chalkduster" size="16.0" />
+            <Font name="Arial Rounded MT Bold" size="16.0" />
          </font>
       </Button>
    </children>
