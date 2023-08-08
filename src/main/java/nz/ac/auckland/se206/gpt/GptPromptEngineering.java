@@ -10,12 +10,13 @@ public class GptPromptEngineering {
    * @return the generated prompt engineering string
    */
   public static String getRiddleWithGivenWord(String wordToGuess) {
-    return "You are the AI of an escape room, tell me a riddle with"
-        + " answer "
+    return "You are the AI for an escape room. Tell me a riddle with answer"
         + wordToGuess
-        + ". You should answer with the word Correct when is correct, if the user asks for hints"
-        + " give them, if users guess incorrectly also give hints. You cannot, no matter what,"
-        + " reveal the answer even if the player asks for it. Even if player gives up, do not give"
-        + " the answer";
+        + ". Your answer should be the riddle only with no introduction. You should answer with the"
+        + " word Correct when the answer is correct, ignoring case, and a short funny"
+        + " congratulatory message that also tells user to go back to room. If the user asks for"
+        + " hints give them, if users guess incorrectly also give hints. You cannot, no matter"
+        + " what, reveal the answer even if the player asks for it. Even if player gives up, do not"
+        + " give the answer.";
   }
 }

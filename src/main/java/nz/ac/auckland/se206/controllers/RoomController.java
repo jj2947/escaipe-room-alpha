@@ -21,6 +21,7 @@ public class RoomController {
   @FXML private Rectangle window;
   @FXML private Rectangle computer;
   @FXML private Label timerLabel;
+  @FXML private Label chatLabel;
   private Timer timer;
 
   /** Initializes the room view, it is called when the room loads. */
@@ -101,7 +102,7 @@ public class RoomController {
     System.out.println("door clicked");
 
     if (!GameState.isRiddleResolved) {
-      showDialog("Info", "Riddle", "You need to resolve the riddle!");
+      //showDialog("Info", "Riddle", "You need to resolve the riddle!");
       Rectangle rectangle = (Rectangle) event.getSource();
       Scene sceneRectangleIsIn = rectangle.getScene();
       sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));

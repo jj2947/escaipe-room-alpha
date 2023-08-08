@@ -39,9 +39,10 @@ public class ChatController {
   @FXML
   public void initialize() throws ApiProxyException {
     chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(0.2).setTopP(0.5).setMaxTokens(100);
+        new ChatCompletionRequest().setN(1).setTemperature(0.4).setTopP(0.75).setMaxTokens(25);
     chatTextArea.setEditable(false);
-
+    appendChatMessage(
+        new ChatMessage("assistant", "Solve the riddle to find the key and escape the room!"));
     Task<Void> initializeTask =
         new Task<Void>() {
           @Override
@@ -85,7 +86,7 @@ public class ChatController {
    * @param msg the chat message to append
    */
   private void appendChatMessage(ChatMessage msg) {
-    chatTextArea.appendText(msg.getContent() + "\n\n");
+    chatTextArea.appendText(msg.getContent() + "\n");
   }
 
   /**
