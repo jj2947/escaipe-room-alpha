@@ -46,6 +46,8 @@ public class App extends Application {
   public void start(final Stage stage) throws IOException {
     SceneManager.addUi(AppUi.ROOM, loadFxml("room"));
     SceneManager.addUi(AppUi.CHAT, loadFxml("chat"));
+    SceneManager.addUi(AppUi.ESCAPED, loadFxml("escaped"));
+    SceneManager.addUi(AppUi.LOST, loadFxml("lost"));
 
     scene = new Scene(SceneManager.getUiRoot(AppUi.ROOM), 900, 705);
     stage.setScene(scene);
