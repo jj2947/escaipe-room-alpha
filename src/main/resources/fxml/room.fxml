@@ -7,20 +7,25 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="room" focusTraversable="true" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" prefHeight="470.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.RoomController">
+<Pane fx:id="room" focusTraversable="true" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" prefHeight="705" prefWidth="900" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.RoomController">
    <children>
-      <ImageView fitHeight="399.0" fitWidth="570.0" layoutX="14.0" layoutY="65.0">
+      <ImageView fitHeight="705" fitWidth="900" layoutY="3.0">
          <image>
             <Image url="@../images/room.png" />
          </image>
       </ImageView>
-      <Label fx:id="timerLabel" layoutX="30.0" layoutY="24.0" prefHeight="41.0" prefWidth="549.0">
+      <Label fx:id="timerLabel" layoutX="752.0" layoutY="11.0" prefHeight="61.0" prefWidth="145.0">
          <font>
             <Font name="Arial" size="35.0" />
          </font>
       </Label>
-      <Rectangle fx:id="computer" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="60.0" layoutX="429.0" layoutY="234.0" onMouseClicked="#clickComputer" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="112.0" />
-      <Rectangle fx:id="window" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="68.0" layoutX="313.0" layoutY="226.0" onMouseClicked="#clickWindow" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="82.0" />
-      <Rectangle fx:id="door" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="285.0" layoutX="56.0" layoutY="92.0" onMouseClicked="#clickDoor" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="206.0" />
+      <Rectangle fx:id="computer" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="112.0" layoutX="656.0" layoutY="288.0" onMouseClicked="#clickComputer" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="173.0" />
+      <Rectangle fx:id="window" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="119.0" layoutX="468.0" layoutY="277.0" onMouseClicked="#clickWindow" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="135.0" />
+      <Rectangle fx:id="door" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="513.0" layoutX="62.0" layoutY="39.0" onMouseClicked="#clickDoor" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="335.0" />
+      <Label fx:id="chatLabel" alignment="CENTER" layoutX="16.0" layoutY="622.0" prefHeight="72.0" prefWidth="867.0">
+         <font>
+            <Font size="35.0" />
+         </font>
+      </Label>
    </children>
 </Pane>
