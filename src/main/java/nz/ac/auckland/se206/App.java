@@ -49,7 +49,7 @@ public class App extends Application {
     SceneManager.addUi(AppUi.ESCAPED, loadFxml("escaped"));
     SceneManager.addUi(AppUi.LOST, loadFxml("lost"));
 
-    scene = new Scene(SceneManager.getUiRoot(AppUi.ROOM), 900, 705);
+    scene = new Scene(SceneManager.getUiRoot(AppUi.ROOM), 795, 735);
     stage.setScene(scene);
     stage.show();
   }

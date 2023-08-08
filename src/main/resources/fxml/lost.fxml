@@ -5,15 +5,14 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="705.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.EndController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="735.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.EndController">
    <children>
-      <Label alignment="CENTER" layoutX="224.0" layoutY="238.0" prefHeight="140.0" prefWidth="456.0" text="Time is Up!">
+      <Label alignment="CENTER" layoutX="170.0" layoutY="239.0" prefHeight="140.0" prefWidth="456.0" text="Time is Up!">
          <font>
             <Font name="Chalkduster" size="60.0" />
          </font>
       </Label>
-      <Button fx:id="restartButton" layoutX="354.0" layoutY="380.0" mnemonicParsing="false" onAction="#clickRestart" prefHeight="47.0" prefWidth="202.0" text="Restart">
+      <Button fx:id="restartButton" layoutX="297.0" layoutY="379.0" mnemonicParsing="false" onAction="#clickRestart" prefHeight="47.0" prefWidth="202.0" text="Restart">
          <font>
             <Font name="Chalkduster" size="30.0" />
          </font>

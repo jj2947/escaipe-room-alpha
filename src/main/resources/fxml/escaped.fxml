@@ -4,10 +4,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="705.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="735.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label alignment="CENTER" layoutX="86.0" layoutY="291.0" prefHeight="125.0" prefWidth="734.0" text="You Escaped" textAlignment="CENTER">
+      <Label alignment="CENTER" layoutX="31.0" layoutY="294.0" prefHeight="125.0" prefWidth="734.0" text="You Escaped" textAlignment="CENTER">
          <font>
             <Font name="Chalkduster" size="80.0" />
          </font>
