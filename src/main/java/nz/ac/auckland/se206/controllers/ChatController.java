@@ -39,7 +39,7 @@ public class ChatController {
   @FXML
   public void initialize() throws ApiProxyException {
     chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(0.4).setTopP(0.75).setMaxTokens(25);
+        new ChatCompletionRequest().setN(1).setTemperature(0.2).setTopP(0.4).setMaxTokens(100);
     chatTextArea.setEditable(false);
     appendChatMessage(
         new ChatMessage("assistant", "Solve the riddle to find the key and escape the room!"));
@@ -86,7 +86,7 @@ public class ChatController {
    * @param msg the chat message to append
    */
   private void appendChatMessage(ChatMessage msg) {
-    chatTextArea.appendText(msg.getContent() + "\n");
+    chatTextArea.appendText(msg.getContent() + "\n\n");
   }
 
   /**
@@ -97,9 +97,10 @@ public class ChatController {
    * @throws ApiProxyException if there is an error communicating with the API proxy
    */
   private void runGpt(ChatMessage msg) {
-    // Display "Loading..." message
-    String loadingMessage = "Loading...";
-    appendChatMessage(new ChatMessage("assistant", loadingMessage));
+    Platform.runLater(
+        () -> {
+          appendChatMessage(new ChatMessage("assistant", "Loading..."));
+        });
 
     Task<Void> backgroundTask =
         new Task<Void>() {
@@ -171,8 +172,11 @@ public class ChatController {
   }
 
   private void updateLabel() {
-    timerLabel2.setText(
-        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+    Platform.runLater(
+        () -> {
+          timerLabel2.setText(
+              String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+        });
   }
 
   private void replaceLoadingMessageWithResponse(String response) {
