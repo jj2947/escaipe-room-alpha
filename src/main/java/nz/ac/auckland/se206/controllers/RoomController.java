@@ -21,6 +21,7 @@ import nz.ac.auckland.se206.gpt.openai.ApiProxyException;
 import nz.ac.auckland.se206.gpt.openai.ChatCompletionRequest;
 import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult;
 import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult.Choice;
+import nz.ac.auckland.se206.speech.TextToSpeech;
 
 /** Controller class for the room view. */
 public class RoomController {
@@ -33,7 +34,8 @@ public class RoomController {
   @FXML private Button helpButton;
   private Timer timer;
   private ChatCompletionRequest chatCompletionRequest;
-  Thread chatThread;
+  private Thread chatThread;
+  private TextToSpeech textToSpeech;
 
   /** Initializes the room view, it is called when the room loads. */
   public void initialize() {
@@ -42,6 +44,8 @@ public class RoomController {
         new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(1).setMaxTokens(25);
     // Start the timer
     timer = new Timer(timerLabel);
+    // Initialize the TextToSpeech instance
+    textToSpeech = new TextToSpeech();
     GameState.timer = timer;
     GameState.isGameStarted = true;
 
@@ -73,15 +77,30 @@ public class RoomController {
             int currentSentenceIndex = 0;
             while (!Thread.currentThread().isInterrupted()) {
               String sentence = chatSentences[currentSentenceIndex];
-              Platform.runLater(() -> chatLabel.setText(sentence));
+              Task<Void> speakTask =
+                  new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+
+                      textToSpeech.speak(sentence);
+
+                      return null;
+                    }
+                  };
+              Thread speakThread = new Thread(speakTask);
+              speakThread.setDaemon(true);
+              speakThread.start();
+              Platform.runLater(
+                  () -> {
+                    chatLabel.setText(sentence);
+                  });
 
               if (currentSentenceIndex < chatSentences.length - 1) {
                 currentSentenceIndex++;
+                Thread.sleep(3 * 1000);
               } else {
-                Thread.sleep(120000);
+                Thread.currentThread().interrupt();
               }
-
-              Thread.sleep(4 * 1000);
             }
             return null;
           }
@@ -208,7 +227,23 @@ public class RoomController {
           protected Void call() throws Exception {
             try {
               String helpMessage = getAIHelpMessage(); // Get AI-generated help message
-              Platform.runLater(() -> chatLabel.setText(helpMessage));
+              Task<Void> speakTask =
+                  new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+
+                      textToSpeech.speak(helpMessage);
+
+                      return null;
+                    }
+                  };
+              Thread speakThread = new Thread(speakTask);
+              speakThread.setDaemon(true);
+              speakThread.start();
+              Platform.runLater(
+                  () -> {
+                    chatLabel.setText(helpMessage);
+                  });
             } catch (Exception e) {
               e.printStackTrace();
             } finally {
@@ -235,19 +270,25 @@ public class RoomController {
   }
 
   private String[] chatSentences = {
-    "Welcome to the escape room!", "You have 2 minutes to escape the room.", "If you get stuck, use the Help button!", ""
+    "Welcome to the escape room!",
+    "You have 2 minutes to escape the room.",
+    "If you get stuck, use the Help button!",
+    ""
   };
 
   private String getAIHelpMessage() {
     try {
       // Run the AI chat and get the response
       if (!GameState.isKeyFound && GameState.isRiddleResolved) {
+        System.out.println("key not found, riddle resolved");
         chatCompletionRequest.addMessage(
             new ChatMessage("user", GptPromptEngineering.getKeyHint()));
       } else if (GameState.isRiddleResolved && GameState.isKeyFound) {
+        System.out.println("key found, riddle resolved");
         chatCompletionRequest.addMessage(
             new ChatMessage("user", GptPromptEngineering.getDoorHint()));
       } else {
+        System.out.println("key not found, riddle not resolved");
         chatCompletionRequest.addMessage(
             new ChatMessage("user", GptPromptEngineering.getStartHint()));
       }
