@@ -96,6 +96,9 @@ public class ChatController {
    * @throws ApiProxyException if there is an error communicating with the API proxy
    */
   private void runGpt(ChatMessage msg) {
+    // Display "Loading..." message
+    String loadingMessage = "Loading...";
+    appendChatMessage(new ChatMessage("assistant", loadingMessage));
 
     Task<Void> backgroundTask =
         new Task<Void>() {
@@ -106,7 +109,11 @@ public class ChatController {
               ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
               Choice result = chatCompletionResult.getChoices().iterator().next();
               chatCompletionRequest.addMessage(result.getChatMessage());
-              appendChatMessage(result.getChatMessage());
+              // Replace "Loading..." message with GPT response
+              Platform.runLater(
+                  () -> {
+                    replaceLoadingMessageWithResponse(result.getChatMessage().getContent());
+                  });
               // Check if the assistant's response contains "Correct"
               if (result.getChatMessage().getRole().equals("assistant")
                   && result.getChatMessage().getContent().startsWith("Correct")) {
@@ -165,5 +172,19 @@ public class ChatController {
   private void updateLabel() {
     timerLabel2.setText(
         String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+  }
+
+  private void replaceLoadingMessageWithResponse(String response) {
+    String loadingMessage = "Loading...";
+    String content = chatTextArea.getText();
+
+    // Find the index of the last occurrence of "Loading..." in the chatTextArea
+    int lastLoadingIndex = content.lastIndexOf(loadingMessage);
+
+    // If "Loading..." is found, replace it with the GPT response
+    if (lastLoadingIndex != -1) {
+      chatTextArea.replaceText(
+          lastLoadingIndex, lastLoadingIndex + loadingMessage.length(), response);
+    }
   }
 }
