@@ -21,8 +21,8 @@ public class GptPromptEngineering {
   }
 
   public static String getDoorHint() {
-    return "You are the gamemaster of an escape room. In 15 words or less tell the player to click"
-        + " on the door to finish the game";
+    return "You are the gamemaster of an escape room. In 15 words or less tell the player to unlock"
+        + " the door to end the game";
   }
 
   public static String getKeyHint() {
@@ -32,7 +32,7 @@ public class GptPromptEngineering {
 
   public static String getStartHint() {
     return "You are the gamemaster of an escape room. In 15 words or less tell user that"
-        + " they need to click on the door to start";
+        + " they need to open the door to start";
   }
 
   public static String getCodeHint() {
