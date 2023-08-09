@@ -10,7 +10,12 @@ import javafx.scene.control.TextField;
 import nz.ac.auckland.se206.GameState;
 import nz.ac.auckland.se206.SceneManager;
 import nz.ac.auckland.se206.SceneManager.AppUi;
+import nz.ac.auckland.se206.gpt.ChatMessage;
+import nz.ac.auckland.se206.gpt.GptPromptEngineering;
+import nz.ac.auckland.se206.gpt.openai.ApiProxyException;
 import nz.ac.auckland.se206.gpt.openai.ChatCompletionRequest;
+import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult;
+import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult.Choice;
 
 public class PinpadController {
 
@@ -26,6 +31,7 @@ public class PinpadController {
   @FXML private Button enterButton;
   @FXML private TextField pinpadTextField;
   @FXML private Label timerLabel3;
+  @FXML private Button helpButton;
   private Timer timer;
   private ChatCompletionRequest chatCompletionRequest;
 
@@ -104,8 +110,58 @@ public class PinpadController {
   }
 
   private String[] chatSentences = {
-    "Enter the code to escape the room.",
-    "If you get stuck, use the Help button!",
-    ""
+    "Enter the code to escape the room.", "If you get stuck, use the Help button!", ""
   };
+
+  @FXML
+  public void onClickHelp() {
+    System.out.println("help button clicked");
+
+    // Disable the help button temporarily to prevent multiple clicks
+    helpButton.setDisable(true);
+
+    // Set the chat label to loading message
+    pinpadTextField.setText("Loading...");
+
+    // Run the AI chat in the background
+    Task<Void> aiChatTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            try {
+              String helpMessage = getAIHelpMessage(); // Get AI-generated help message
+              Platform.runLater(
+                  () -> {
+                    pinpadTextField.setText(helpMessage);
+                  });
+            } catch (Exception e) {
+              e.printStackTrace();
+            } finally {
+              // Re-enable the help button
+              Platform.runLater(() -> helpButton.setDisable(false));
+            }
+            return null;
+          }
+
+          private String getAIHelpMessage() {
+            try {
+              chatCompletionRequest.addMessage(
+                  new ChatMessage("user", GptPromptEngineering.getCodeHint()));
+
+              ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
+              Choice result = chatCompletionResult.getChoices().iterator().next();
+              String helpMessage = result.getChatMessage().getContent();
+              return helpMessage;
+            } catch (ApiProxyException e) {
+              e.printStackTrace();
+              return "Sorry, I couldn't retrieve the help message.";
+            }
+          }
+        };
+
+    // Start the AI chat task in a new thread
+    Thread aiChatThread = new Thread(aiChatTask);
+    aiChatThread.setDaemon(true);
+    aiChatThread.start();
+  }
 }
