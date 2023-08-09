@@ -16,4 +16,6 @@ public class GameState {
   public static boolean isGameStarted = false;
 
   public static Timer timer;
+
+  public static String Code;
 }

@@ -9,7 +9,8 @@ public class SceneManager {
     CHAT,
     ROOM,
     ESCAPED,
-    LOST
+    LOST,
+    PINPAD
   }
 
   private static HashMap<AppUi, Parent> sceneMap = new HashMap<AppUi, Parent>();
