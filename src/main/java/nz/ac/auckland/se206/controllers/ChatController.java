@@ -26,6 +26,10 @@ public class ChatController {
   @FXML private TextField inputText;
   @FXML private Button sendButton;
   @FXML private Label timerLabel2;
+  @FXML private Button backButton;  
+  private Thread updateThread;
+  private Thread initializeThread;
+  private Thread runGptThread;
 
   private Timer timer;
 
@@ -66,7 +70,7 @@ public class ChatController {
                 };
 
             // Create a new thread for the update task and start it
-            Thread updateThread = new Thread(updateLabelTask);
+            updateThread = new Thread(updateLabelTask);
             updateThread.setDaemon(true);
             updateThread.start();
 
@@ -75,7 +79,7 @@ public class ChatController {
         };
 
     // Create a new thread for the initialization task and start it
-    Thread initializeThread = new Thread(initializeTask);
+    initializeThread = new Thread(initializeTask);
     initializeThread.setDaemon(true);
     initializeThread.start();
   }
@@ -130,9 +134,9 @@ public class ChatController {
         };
 
     // Execute the background task in a new thread
-    Thread thread = new Thread(backgroundTask);
-    thread.setDaemon(true);
-    thread.start();
+     runGptThread = new Thread(backgroundTask);
+    runGptThread.setDaemon(true);
+    runGptThread.start();
   }
 
   /**
@@ -185,11 +189,16 @@ public class ChatController {
   }
 
   private void switchToGameOverScene() {
+    runGptThread.interrupt();
+    updateThread.interrupt();
+    initializeThread.interrupt();
     // Get the root of the game over scene and set it as the new root
-    Scene currentScene = timerLabel2.getScene();
     Platform.runLater(
         () -> {
-          currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+          Scene currentScene = timerLabel2.getScene();
+          if (currentScene != null) {
+            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+          }
         });
   }
 

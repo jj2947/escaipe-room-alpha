@@ -6,7 +6,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
@@ -36,7 +35,9 @@ public class RoomController {
   private Timer timer;
   private ChatCompletionRequest chatCompletionRequest;
   private Thread chatThread;
+  private Thread updateThread;
   private TextToSpeech textToSpeech;
+  private Thread aiChatThread;
 
   /** Initializes the room view, it is called when the room loads. */
   public void initialize() {
@@ -49,7 +50,6 @@ public class RoomController {
     textToSpeech = new TextToSpeech();
     GameState.timer = timer;
     GameState.isGameStarted = true;
-
     timer = GameState.timer;
 
     // Update the timer label every second
@@ -66,7 +66,7 @@ public class RoomController {
         };
 
     // Create a new thread for the update task and start it
-    Thread updateThread = new Thread(updateLabelTask);
+    updateThread = new Thread(updateLabelTask);
     updateThread.setDaemon(true);
     updateThread.start();
 
@@ -75,6 +75,7 @@ public class RoomController {
         new Task<Void>() {
           @Override
           protected Void call() throws Exception {
+            chatLabel.setFont(javafx.scene.text.Font.font("Arial Rounded MT Bold", 20));
             int currentSentenceIndex = 0;
             while (!Thread.currentThread().isInterrupted()) {
               String sentence = chatSentences[currentSentenceIndex];
@@ -91,6 +92,7 @@ public class RoomController {
               Thread speakThread = new Thread(speakTask);
               speakThread.setDaemon(true);
               speakThread.start();
+              speakThread.interrupt();
               Platform.runLater(
                   () -> {
                     chatLabel.setText(sentence);
@@ -98,7 +100,11 @@ public class RoomController {
 
               if (currentSentenceIndex < chatSentences.length - 1) {
                 currentSentenceIndex++;
-                Thread.sleep(3 * 1000);
+                if (currentSentenceIndex == 3) {
+                  Thread.sleep(5 * 1000);
+                } else {
+                  Thread.sleep(3 * 1000);
+                }
               } else {
                 Thread.currentThread().interrupt();
               }
@@ -133,21 +139,6 @@ public class RoomController {
   }
 
   /**
-   * Displays a dialog box with the given title, header text, and message.
-   *
-   * @param title the title of the dialog box
-   * @param headerText the header text of the dialog box
-   * @param message the message content of the dialog box
-   */
-  private void showDialog(String title, String headerText, String message) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(headerText);
-    alert.setContentText(message);
-    alert.showAndWait();
-  }
-
-  /**
    * Handles the click event on the door.
    *
    * @param event the mouse event
@@ -169,8 +160,6 @@ public class RoomController {
     if (!GameState.isKeyFound) {
       clickHelpButton(null);
     } else {
-      GameState.isTimeReached = true;
-      GameState.isGameStarted = false;
       Rectangle rectangle = (Rectangle) event.getSource();
       Scene sceneRectangleIsIn = rectangle.getScene();
       sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
@@ -186,10 +175,26 @@ public class RoomController {
   public void clickComputer(MouseEvent event) {
     System.out.println("computer clicked");
     if (GameState.isRiddleResolved && !GameState.isKeyFound) {
-      //showDialog("Info", "Key Found", "You found a key under the computer!");
-      GameState.Code = "4910";
-      codeLabel.setText(GameState.Code);
+      chatLabel.setFont(javafx.scene.text.Font.font("Arial Rounded MT Bold", 20));
+      String message = "Use this code to escape!";
+      Task<Void> speakTask =
+          new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+              textToSpeech.speak(message);
+
+              return null;
+            }
+          };
+      Thread speakThread = new Thread(speakTask);
+      speakThread.setDaemon(true);
+      speakThread.start();
+      chatLabel.setText(message);
+      GameState.Code = "4 9 1 6";
+      codeLabel.setText("4916");
       GameState.isKeyFound = true;
+      speakThread.interrupt();
     }
   }
 
@@ -221,6 +226,7 @@ public class RoomController {
     helpButton.setDisable(true);
 
     // Set the chat label to loading message
+    chatLabel.setFont(javafx.scene.text.Font.font("Chalkduster", 20));
     chatLabel.setText("Loading...");
 
     // Run the AI chat in the background
@@ -243,6 +249,7 @@ public class RoomController {
               Thread speakThread = new Thread(speakTask);
               speakThread.setDaemon(true);
               speakThread.start();
+              speakThread.interrupt();
               Platform.runLater(
                   () -> {
                     chatLabel.setText(helpMessage);
@@ -258,24 +265,31 @@ public class RoomController {
         };
 
     // Start the AI chat task in a new thread
-    Thread aiChatThread = new Thread(aiChatTask);
+    aiChatThread = new Thread(aiChatTask);
     aiChatThread.setDaemon(true);
     aiChatThread.start();
   }
 
   private void switchToGameOverScene() {
 
-    Scene currentScene = timerLabel.getScene();
+    chatThread.interrupt();
+    updateThread.interrupt();
+    textToSpeech.terminate();
+
     Platform.runLater(
         () -> {
-          currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+          Scene currentScene = timerLabel.getScene();
+          if (currentScene != null) {
+            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+            chatLabel.setText("");
+          }
         });
   }
 
   private String[] chatSentences = {
     "Welcome to the escape room!",
     "You have 2 minutes to escape the room.",
-    "If you get stuck, use the Help button!",
+    "If you get stuck, use the Help button to ask the game master for a clue!",
     ""
   };
 
