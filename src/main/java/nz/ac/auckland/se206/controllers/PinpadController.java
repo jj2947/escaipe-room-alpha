@@ -33,10 +33,13 @@ public class PinpadController {
   @FXML private Label timerLabel3;
   @FXML private Button helpButton;
   @FXML private Button backButton;
+  @FXML private Button clearButton;
   @FXML private Label chatLabel;
   private Timer timer;
   private ChatCompletionRequest chatCompletionRequest;
   private int numsEntered = 0;
+  private Thread updateThread;
+  private Thread aiChatThread;
 
   public void initialize() {
     // Initialization code goes here
@@ -60,7 +63,7 @@ public class PinpadController {
         };
 
     // Create a new thread for the update task and start it
-    Thread updateThread = new Thread(updateLabelTask);
+    updateThread = new Thread(updateLabelTask);
     updateThread.setDaemon(true);
     updateThread.start();
   }
@@ -76,10 +79,14 @@ public class PinpadController {
   }
 
   private void switchToGameOverScene() {
-    Scene currentScene = timerLabel3.getScene();
+    aiChatThread.interrupt();
+    updateThread.interrupt();
     Platform.runLater(
         () -> {
-          currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+          Scene currentScene = timerLabel3.getScene();
+          if (currentScene != null) {
+            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+          }
         });
   }
 
@@ -91,6 +98,7 @@ public class PinpadController {
     helpButton.setDisable(true);
 
     textField.setText("");
+    numsEntered = 0;
     // Set the chat label to loading message
     chatLabel.setText("Loading...");
 
@@ -131,7 +139,7 @@ public class PinpadController {
         };
 
     // Start the AI chat task in a new thread
-    Thread aiChatThread = new Thread(aiChatTask);
+    aiChatThread = new Thread(aiChatTask);
     aiChatThread.setDaemon(true);
     aiChatThread.start();
   }
@@ -182,18 +190,33 @@ public class PinpadController {
   }
 
   private void updateTextField(String number) {
-    numsEntered++;
     chatLabel.setText("");
+
+    if (number == null) {
+      enterButton.disableProperty().setValue(true);
+      oneButton.disableProperty().setValue(false);
+      twoButton.disableProperty().setValue(false);
+      threeButton.disableProperty().setValue(false);
+      fourButton.disableProperty().setValue(false);
+      fiveButton.disableProperty().setValue(false);
+      sixButton.disableProperty().setValue(false);
+      sevenButton.disableProperty().setValue(false);
+      eightButton.disableProperty().setValue(false);
+      nineButton.disableProperty().setValue(false);
+      return;
+    }
+    numsEntered++;
 
     if (numsEntered == 1) {
       textField.setText(number + " _ _ _");
     } else if (numsEntered == 2) {
-      textField.setText(textField.getText().charAt(0) + number + " _ _");
+      textField.setText(textField.getText().charAt(0) +" " + number + " _ _");
     } else if (numsEntered == 3) {
-      textField.setText(textField.getText().substring(0, 2) + number + " _");
+      textField.setText(textField.getText().substring(0, 4) + number + " _");
     } else if (numsEntered == 4) {
-      textField.setText(textField.getText().substring(0, 3) + number);
+      enterButton.disableProperty().setValue(false);
       enterButton.requestFocus();
+      textField.setText(textField.getText().substring(0, 6) + number);
       oneButton.disableProperty().setValue(true);
       twoButton.disableProperty().setValue(true);
       threeButton.disableProperty().setValue(true);
@@ -202,11 +225,12 @@ public class PinpadController {
       sixButton.disableProperty().setValue(true);
       sevenButton.disableProperty().setValue(true);
       eightButton.disableProperty().setValue(true);
-      nineButton.disableProperty().setValue(true);enterButton.disableProperty().setValue(false);
+      nineButton.disableProperty().setValue(true);
     } else {
       textField.setText("Incorrect");
       numsEntered = 0;
-      enterButton.disableProperty().setValue(true);      oneButton.disableProperty().setValue(false);
+      enterButton.disableProperty().setValue(true);
+      oneButton.disableProperty().setValue(false);
       twoButton.disableProperty().setValue(false);
       threeButton.disableProperty().setValue(false);
       fourButton.disableProperty().setValue(false);
@@ -222,13 +246,16 @@ public class PinpadController {
   public void onEnter() {
     if (textField.getText().equals(GameState.Code)) {
       GameState.isTimeReached = true;
-      Scene currentScene = timerLabel3.getScene();
       Platform.runLater(
           () -> {
-            currentScene.setRoot(SceneManager.getUiRoot(AppUi.ESCAPED));
+            Scene currentScene = timerLabel3.getScene();
+            if (currentScene != null) {
+              currentScene.setRoot(SceneManager.getUiRoot(AppUi.ESCAPED));
+            }
           });
     } else {
       numsEntered = 0;
+      textField.setText("Incorrect");
       updateTextField(null);
     }
   }
@@ -240,5 +267,12 @@ public class PinpadController {
         () -> {
           currentScene.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
         });
+  }
+
+  @FXML
+  public void onClear() {
+    numsEntered = 0;
+    textField.setText("_ _ _ _");
+    updateTextField(null);
   }
 }
