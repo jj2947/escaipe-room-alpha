@@ -36,6 +36,7 @@ public class PinpadController {
   @FXML private Label chatLabel;
   private Timer timer;
   private ChatCompletionRequest chatCompletionRequest;
+  private int numsEntered = 0;
 
   /** Initializes the room view, it is called when the room loads. */
   public void initialize() {
@@ -44,6 +45,7 @@ public class PinpadController {
         new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(1).setMaxTokens(25);
     // Start the timer
     timer = GameState.timer;
+    enterButton.disableProperty().setValue(true);
 
     // Update the timer label every second
     Task<Void> updateLabelTask =
@@ -171,56 +173,85 @@ public class PinpadController {
 
   @FXML
   public void onClickOne() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "1");
+    updateTextField("1");
   }
 
   @FXML
   public void onClickTwo() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "2");
+    updateTextField("2");
   }
 
   @FXML
   public void onClickThree() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "3");
+    updateTextField("3");
   }
 
   @FXML
   public void onClickFour() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "4");
+    updateTextField("4");
   }
 
   @FXML
   public void onClickFive() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "5");
+    updateTextField("5");
   }
 
   @FXML
   public void onClickSix() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "6");
+    updateTextField("6");
   }
 
   @FXML
   public void onClickSeven() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "7");
+    updateTextField("7");
   }
 
   @FXML
   public void onClickEight() {
-    chatLabel.setText("");
-    textField.setText(textField.getText() + "8");
+    updateTextField("8");
   }
 
   @FXML
   public void onClickNine() {
+    updateTextField("9");
+  }
+
+  private void updateTextField(String number) {
+    numsEntered++;
     chatLabel.setText("");
-    textField.setText(textField.getText() + "9");
+
+    if (numsEntered == 1) {
+      textField.setText(number + " _ _ _");
+    } else if (numsEntered == 2) {
+      textField.setText(textField.getText().charAt(0) + number + " _ _");
+    } else if (numsEntered == 3) {
+      textField.setText(textField.getText().substring(0, 2) + number + " _");
+    } else if (numsEntered == 4) {
+      textField.setText(textField.getText().substring(0, 3) + number);
+      oneButton.disableProperty().setValue(true);
+      twoButton.disableProperty().setValue(true);
+      threeButton.disableProperty().setValue(true);
+      fourButton.disableProperty().setValue(true);
+      fiveButton.disableProperty().setValue(true);
+      sixButton.disableProperty().setValue(true);
+      sevenButton.disableProperty().setValue(true);
+      eightButton.disableProperty().setValue(true);
+      nineButton.disableProperty().setValue(true);
+      enterButton.disableProperty().setValue(false);
+    } else {
+      textField.setText("Incorrect");
+      numsEntered = 0;
+      enterButton.disableProperty().setValue(true);
+      oneButton.disableProperty().setValue(false);
+      twoButton.disableProperty().setValue(false);
+      threeButton.disableProperty().setValue(false);
+      fourButton.disableProperty().setValue(false);
+      fiveButton.disableProperty().setValue(false);
+      sixButton.disableProperty().setValue(false);
+      sevenButton.disableProperty().setValue(false);
+      eightButton.disableProperty().setValue(false);
+      nineButton.disableProperty().setValue(false);
+    }
   }
 
   @FXML
@@ -233,7 +264,8 @@ public class PinpadController {
             currentScene.setRoot(SceneManager.getUiRoot(AppUi.ESCAPED));
           });
     } else {
-      textField.setText("Incorrect");
+      numsEntered = 0;
+      updateTextField(null);
     }
   }
 
