@@ -34,4 +34,9 @@ public class GptPromptEngineering {
     return "You are the gamemaster of an escape room. In 15 words or less tell user that"
         + " they need to click on the door to start";
   }
+
+  public static String getCodeHint() {
+    return "You are the gamemaster of an escape room. In 15 words or less tell user that"
+        + " they need to enter the code given by the computer to escape the room";
+  }
 }

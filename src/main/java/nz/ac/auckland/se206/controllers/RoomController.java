@@ -32,6 +32,7 @@ public class RoomController {
   @FXML private Label timerLabel;
   @FXML private Label chatLabel;
   @FXML private Button helpButton;
+  @FXML private Label codeLabel;
   private Timer timer;
   private ChatCompletionRequest chatCompletionRequest;
   private Thread chatThread;
@@ -166,13 +167,13 @@ public class RoomController {
     }
 
     if (!GameState.isKeyFound) {
-      showDialog("Info", "Find the key!", "You solved the riddle, now you know where the key is.");
+      clickHelpButton(null);
     } else {
       GameState.isTimeReached = true;
       GameState.isGameStarted = false;
       Rectangle rectangle = (Rectangle) event.getSource();
       Scene sceneRectangleIsIn = rectangle.getScene();
-      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.ESCAPED));
+      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
     }
   }
 
@@ -185,7 +186,9 @@ public class RoomController {
   public void clickComputer(MouseEvent event) {
     System.out.println("computer clicked");
     if (GameState.isRiddleResolved && !GameState.isKeyFound) {
-      showDialog("Info", "Key Found", "You found a key under the computer!");
+      //showDialog("Info", "Key Found", "You found a key under the computer!");
+      GameState.Code = "4910";
+      codeLabel.setText(GameState.Code);
       GameState.isKeyFound = true;
     }
   }
