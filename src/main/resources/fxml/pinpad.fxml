@@ -63,7 +63,7 @@
             <Font size="75.0" />
          </font>
       </TextField>
-      <Button fx:id="enterButton" layoutX="309.0" layoutY="659.0" mnemonicParsing="false" onAction="#onEnter" prefHeight="55.0" prefWidth="180.0" text="Enter">
+      <Button fx:id="enterButton" layoutX="313.0" layoutY="659.0" mnemonicParsing="false" onAction="#onEnter" prefHeight="55.0" prefWidth="180.0" text="Enter">
          <font>
             <Font name="System Font" size="29.0" />
          </font>
@@ -73,15 +73,20 @@
             <Font size="26.0" />
          </font>
       </Button>
-      <Button fx:id="helpButton" layoutX="651.0" layoutY="661.0" mnemonicParsing="false" onAction="#onClickHelp" prefWidth="131.0" text="Help">
+      <Button fx:id="helpButton" layoutX="600.0" layoutY="659.0" mnemonicParsing="false" onAction="#onClickHelp" prefHeight="55.0" prefWidth="180.0" text="Help">
          <font>
             <Font size="28.0" />
          </font>
       </Button>
-      <Label fx:id="chatLabel" alignment="CENTER" layoutX="142.0" layoutY="32.0" prefHeight="142.0" prefWidth="507.0" wrapText="true">
+      <Label fx:id="chatLabel" alignment="CENTER" layoutX="142.0" layoutY="32.0" prefHeight="142.0" prefWidth="507.0" textAlignment="CENTER" wrapText="true">
          <font>
             <Font name="Chalkduster" size="19.0" />
          </font>
       </Label>
+      <Button fx:id="clearButton" layoutX="21.0" layoutY="659.0" mnemonicParsing="false" onAction="#onClear" prefHeight="55.0" prefWidth="180.0" text="Clear">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Button>
    </children>
 </Pane>

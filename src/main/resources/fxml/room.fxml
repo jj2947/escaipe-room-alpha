@@ -20,10 +20,9 @@
             <Font name="Arial" size="35.0" />
          </font>
       </Label>
-      <Rectangle fx:id="computer" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="112.0" layoutX="580.0" layoutY="282.0" onMouseClicked="#clickComputer" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="161.0" />
       <Rectangle fx:id="window" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="119.0" layoutX="409.0" layoutY="268.0" onMouseClicked="#clickWindow" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="135.0" />
       <Rectangle fx:id="door" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="491.0" layoutX="37.0" layoutY="45.0" onMouseClicked="#clickDoor" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="323.0" />
-      <Label fx:id="chatLabel" alignment="CENTER" layoutY="676.0" prefHeight="55.0" prefWidth="795.0">
+      <Label fx:id="chatLabel" alignment="CENTER" layoutY="662.0" prefHeight="79.0" prefWidth="795.0" textAlignment="CENTER" wrapText="true">
          <font>
             <Font name="Arial Rounded MT Bold" size="20.0" />
          </font>
@@ -38,5 +37,6 @@
             <Font name="Arial Rounded MT Bold" size="64.0" />
          </font>
       </Label>
+      <Rectangle fx:id="computer" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" focusTraversable="true" height="112.0" layoutX="580.0" layoutY="282.0" onMouseClicked="#clickComputer" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="161.0" />
    </children>
 </Pane>
