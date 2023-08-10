@@ -49,6 +49,7 @@ public class App extends Application {
     SceneManager.addUi(AppUi.ESCAPED, loadFxml("escaped"));
     SceneManager.addUi(AppUi.LOST, loadFxml("lost"));
     SceneManager.addUi(AppUi.PINPAD, loadFxml("pinpad"));
+    SceneManager.addUi(AppUi.LIVING_ROOM, loadFxml("livingRoom"));
 
     scene = new Scene(SceneManager.getUiRoot(AppUi.ROOM));
     stage.setScene(scene);
