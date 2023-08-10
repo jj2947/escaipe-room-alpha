@@ -6,54 +6,54 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="735.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.PinpadController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="735.0" prefWidth="795.0" styleClass="pane" stylesheets="@../css/stylesheet.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.PinpadController">
    <children>
       <Label fx:id="timerLabel3" layoutX="692.0" layoutY="8.0" prefHeight="48.0" prefWidth="102.0">
          <font>
             <Font size="30.0" />
          </font>
       </Label>
-      <Button fx:id="oneButton" layoutX="142.0" layoutY="200.0" mnemonicParsing="false" onAction="#onClickOne" prefHeight="120.0" prefWidth="120.0" text="1">
+      <Button fx:id="oneButton" layoutX="142.0" layoutY="200.0" mnemonicParsing="false" onAction="#onClickOne" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="1">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="twoButton" layoutX="339.0" layoutY="200.0" mnemonicParsing="false" onAction="#onClickTwo" prefHeight="120.0" prefWidth="120.0" text="2">
+      <Button fx:id="twoButton" layoutX="339.0" layoutY="200.0" mnemonicParsing="false" onAction="#onClickTwo" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="2">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="threeButton" layoutX="531.0" layoutY="200.0" mnemonicParsing="false" onAction="#onClickThree" prefHeight="120.0" prefWidth="120.0" text="3">
+      <Button fx:id="threeButton" layoutX="531.0" layoutY="200.0" mnemonicParsing="false" onAction="#onClickThree" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="3">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="fourButton" layoutX="142.0" layoutY="355.0" mnemonicParsing="false" onAction="#onClickFour" prefHeight="120.0" prefWidth="120.0" text="4">
+      <Button fx:id="fourButton" layoutX="142.0" layoutY="355.0" mnemonicParsing="false" onAction="#onClickFour" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="4">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="fiveButton" layoutX="339.0" layoutY="355.0" mnemonicParsing="false" onAction="#onClickFive" prefHeight="120.0" prefWidth="120.0" text="5">
+      <Button fx:id="fiveButton" layoutX="339.0" layoutY="355.0" mnemonicParsing="false" onAction="#onClickFive" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="5">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="sixButton" layoutX="531.0" layoutY="355.0" mnemonicParsing="false" onAction="#onClickSix" prefHeight="120.0" prefWidth="120.0" text="6">
+      <Button fx:id="sixButton" layoutX="531.0" layoutY="355.0" mnemonicParsing="false" onAction="#onClickSix" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="6">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="sevenButton" layoutX="142.0" layoutY="510.0" mnemonicParsing="false" onAction="#onClickSeven" prefHeight="120.0" prefWidth="120.0" text="7">
+      <Button fx:id="sevenButton" layoutX="142.0" layoutY="510.0" mnemonicParsing="false" onAction="#onClickSeven" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="7">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="eightButton" layoutX="339.0" layoutY="510.0" mnemonicParsing="false" onAction="#onClickEight" prefHeight="120.0" prefWidth="120.0" text="8">
+      <Button fx:id="eightButton" layoutX="339.0" layoutY="510.0" mnemonicParsing="false" onAction="#onClickEight" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="8">
          <font>
             <Font size="60.0" />
          </font>
       </Button>
-      <Button fx:id="nineButton" layoutX="531.0" layoutY="510.0" mnemonicParsing="false" onAction="#onClickNine" prefHeight="120.0" prefWidth="120.0" text="9">
+      <Button fx:id="nineButton" layoutX="531.0" layoutY="510.0" mnemonicParsing="false" onAction="#onClickNine" prefHeight="120.0" prefWidth="120.0" stylesheets="@../css/stylesheet.css" text="9">
          <font>
             <Font size="60.0" />
          </font>
@@ -63,27 +63,27 @@
             <Font size="75.0" />
          </font>
       </TextField>
-      <Button fx:id="enterButton" layoutX="313.0" layoutY="659.0" mnemonicParsing="false" onAction="#onEnter" prefHeight="55.0" prefWidth="180.0" text="Enter">
+      <Button fx:id="enterButton" layoutX="313.0" layoutY="659.0" mnemonicParsing="false" onAction="#onEnter" prefHeight="55.0" prefWidth="180.0" stylesheets="@../css/stylesheet.css" text="Enter">
          <font>
             <Font name="System Font" size="29.0" />
          </font>
       </Button>
-      <Button fx:id="backButton" layoutX="14.0" layoutY="31.0" mnemonicParsing="false" onAction="#onBack" prefHeight="49.0" prefWidth="109.0" text="Back">
+      <Button fx:id="backButton" layoutX="14.0" layoutY="31.0" mnemonicParsing="false" onAction="#onBack" prefHeight="49.0" prefWidth="109.0" stylesheets="@../css/stylesheet.css" text="Back">
          <font>
             <Font size="26.0" />
          </font>
       </Button>
-      <Button fx:id="helpButton" layoutX="600.0" layoutY="659.0" mnemonicParsing="false" onAction="#onClickHelp" prefHeight="55.0" prefWidth="180.0" text="Help">
+      <Button fx:id="helpButton" layoutX="600.0" layoutY="659.0" mnemonicParsing="false" onAction="#onClickHelp" prefHeight="55.0" prefWidth="180.0" stylesheets="@../css/stylesheet.css" text="Help">
          <font>
             <Font size="28.0" />
          </font>
       </Button>
       <Label fx:id="chatLabel" alignment="CENTER" layoutX="142.0" layoutY="32.0" prefHeight="142.0" prefWidth="507.0" textAlignment="CENTER" wrapText="true">
          <font>
-            <Font name="Chalkduster" size="19.0" />
+            <Font name="Courier Bold" size="23.0" />
          </font>
       </Label>
-      <Button fx:id="clearButton" layoutX="21.0" layoutY="659.0" mnemonicParsing="false" onAction="#onClear" prefHeight="55.0" prefWidth="180.0" text="Clear">
+      <Button fx:id="clearButton" layoutX="21.0" layoutY="659.0" mnemonicParsing="false" onAction="#onClear" prefHeight="55.0" prefWidth="180.0" stylesheets="@../css/stylesheet.css" text="Clear">
          <font>
             <Font size="28.0" />
          </font>

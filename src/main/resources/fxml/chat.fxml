@@ -7,27 +7,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="735.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.ChatController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="735.0" prefWidth="795.0" style="-fx-background-color: #83b8f2;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.ChatController">
   <children>
-    <TextArea fx:id="chatTextArea" layoutX="65.0" layoutY="75.0" prefHeight="475.0" prefWidth="665.0" wrapText="true">
+    <TextArea fx:id="chatTextArea" editable="false" layoutX="65.0" layoutY="75.0" prefHeight="475.0" prefWidth="665.0" style="-fx-border-color: black; -fx-border-width: 5;" wrapText="true">
          <font>
-            <Font name="Trattatello" size="25.0" />
+            <Font name="Courier Bold" size="25.0" />
          </font></TextArea>
-    <TextField fx:id="inputText" layoutX="65.0" layoutY="573.0" prefHeight="56.0" prefWidth="665.0" promptText="Your Answer...">
+    <TextField fx:id="inputText" layoutX="65.0" layoutY="573.0" prefHeight="56.0" prefWidth="665.0" promptText="Your Answer..." style="-fx-border-color: black; -fx-border-width: 5;">
          <font>
-            <Font name="Trattatello" size="25.0" />
+            <Font name="Courier" size="25.0" />
          </font></TextField>
-    <Button fx:id="sendButton" contentDisplay="CENTER" layoutX="332.0" layoutY="662.0" mnemonicParsing="false" onAction="#onSendMessage" prefHeight="49.0" prefWidth="132.0" text="Enter">
+    <Button fx:id="sendButton" contentDisplay="CENTER" layoutX="332.0" layoutY="662.0" mnemonicParsing="false" onAction="#onSendMessage" prefHeight="49.0" prefWidth="132.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 5;" text="Enter">
          <font>
-            <Font name="Luminari" size="21.0" />
+            <Font name="Courier Bold" size="21.0" />
          </font></Button>
-    <Button layoutX="23.0" layoutY="21.0" mnemonicParsing="false" onAction="#onGoBack" prefHeight="40.0" prefWidth="121.0" text="Go Back">
+    <Button layoutX="21.0" layoutY="15.0" mnemonicParsing="false" onAction="#onGoBack" prefHeight="40.0" prefWidth="121.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 4;" text="Go Back">
          <font>
-            <Font name="Luminari" size="17.0" />
+            <Font name="Courier Bold" size="20.0" />
          </font></Button>
-      <Label fx:id="timerLabel2" layoutX="685.0" layoutY="14.0" prefHeight="45.0" prefWidth="104.0">
+      <Label fx:id="timerLabel2" alignment="CENTER" layoutX="678.0" layoutY="15.0" prefHeight="45.0" prefWidth="105.0">
          <font>
-            <Font size="30.0" />
+            <Font name="Courier Bold" size="30.0" />
          </font>
       </Label>
   </children>
