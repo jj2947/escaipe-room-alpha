@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="735.0" prefWidth="919.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nz.ac.auckland.se206.controllers.LivingRoomController">
+   <children>
+      <ImageView fitHeight="738.0" fitWidth="951.0" layoutX="-3.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/LivingRoom.jpg" />
+         </image>
+      </ImageView>
+      <Button fx:id="hintButton" layoutX="25.0" layoutY="598.0" mnemonicParsing="false" onAction="#onHint" prefHeight="33.0" prefWidth="138.0" style="-fx-background-color: clear; -fx-border-color: white; -fx-border-width: 5;" text="Hint" textFill="WHITE">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="20.0" />
+         </font>
+      </Button>
+      <Label fx:id="chatLabel" alignment="CENTER" layoutX="25.0" layoutY="661.0" prefHeight="68.0" prefWidth="873.0" style="-fx-background-color: #f5f5f5a0; -fx-border-color: white; -fx-border-width: 3;" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="25.0" />
+         </font>
+      </Label>
+      <Label fx:id="timerLabel" alignment="CENTER" layoutX="769.0" layoutY="5.0" prefHeight="80.0" prefWidth="163.0" textFill="#fcfcfc">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="42.0" />
+         </font>
+      </Label>
+      <Button fx:id="backButton" layoutX="16.0" layoutY="18.0" mnemonicParsing="false" onAction="#onGoBack" prefHeight="23.0" prefWidth="121.0" style="-fx-background-color: clear; -fx-border-color: white; -fx-border-width: 5;" text="Go Back" textFill="WHITE">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="20.0" />
+         </font>
+      </Button>
+      <Rectangle fx:id="rocket" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="77.0" layoutX="706.0" layoutY="248.0" onMouseClicked="#clickRocket" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="47.0" />
+      <Rectangle fx:id="door" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="377.0" layoutX="816.0" layoutY="103.0" onMouseClicked="#clickDoor" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="77.0" />
+      <Label fx:id="codeLabel" alignment="CENTER" layoutX="405.0" layoutY="253.0" prefHeight="114.0" prefWidth="161.0" textFill="#30ed00">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="55.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>
