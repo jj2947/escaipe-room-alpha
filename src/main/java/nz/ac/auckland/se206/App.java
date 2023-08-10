@@ -50,7 +50,7 @@ public class App extends Application {
     SceneManager.addUi(AppUi.LOST, loadFxml("lost"));
     SceneManager.addUi(AppUi.PINPAD, loadFxml("pinpad"));
 
-    scene = new Scene(SceneManager.getUiRoot(AppUi.ROOM), 795, 735);
+    scene = new Scene(SceneManager.getUiRoot(AppUi.ROOM));
     stage.setScene(scene);
     stage.show();
   }
