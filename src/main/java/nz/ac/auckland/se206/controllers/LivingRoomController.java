@@ -74,15 +74,6 @@ public class LivingRoomController {
     }
   }
 
-  @FXML
-  private void onGoBack(ActionEvent event) {
-    // Back button action code goes here
-    Button button = (Button) event.getSource();
-    Scene sceneButtonIsIn = button.getScene();
-    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
-    sceneButtonIsIn.getWindow().sizeToScene();
-  }
-
   /**
    * Handles the click event on the controller.
    *
@@ -113,6 +104,15 @@ public class LivingRoomController {
     GameState.isKeyFound = true;
     pinpad.setVisible(true);
     speakThread.interrupt();
+  }
+
+  @FXML
+  private void onGoBack(ActionEvent event) {
+    // Back button action code goes here
+    Button button = (Button) event.getSource();
+    Scene sceneButtonIsIn = button.getScene();
+    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
+    sceneButtonIsIn.getWindow().sizeToScene();
   }
 
   @FXML
@@ -168,22 +168,6 @@ public class LivingRoomController {
     aiChatThread.interrupt();
   }
 
-  private void updateLabel() {
-    timerLabel.setText(
-        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
-
-    if (GameState.isTimeReached) {
-      // Timer has reached zero, switch to the desired scene
-      switchToGameOverScene();
-    }
-
-    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
-      updateChatLabel();
-      GameState.isInLivingRoom = false;
-      GameState.isFirstTimeInLivingRoom = false;
-    }
-  }
-
   private void updateChatLabel() {
     // Set up and start the chatLabel task
     Task<Void> chatTask =
@@ -226,6 +210,22 @@ public class LivingRoomController {
     Thread chatThread = new Thread(chatTask);
     chatThread.setDaemon(true);
     chatThread.start();
+  }
+
+  private void updateLabel() {
+    timerLabel.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+
+    if (GameState.isTimeReached) {
+      // Timer has reached zero, switch to the desired scene
+      switchToGameOverScene();
+    }
+
+    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
+      updateChatLabel();
+      GameState.isInLivingRoom = false;
+      GameState.isFirstTimeInLivingRoom = false;
+    }
   }
 
   private String[] chatSentences = {

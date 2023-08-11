@@ -78,6 +78,24 @@ public class RoomController {
   }
 
   /**
+   * Handles the click event on the computer.
+   *
+   * @param event the mouse event
+   */
+  @FXML
+  public void clickComputer(MouseEvent event) {
+    System.out.println("computer clicked");
+
+    Rectangle rectangle = (Rectangle) event.getSource();
+    Scene sceneRectangleIsIn = rectangle.getScene();
+    GameState.isInRoom = false;
+    chatLabel.setText("");
+    sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
+    // Resizing the window so the larger scene fits
+    sceneRectangleIsIn.getWindow().sizeToScene();
+  }
+
+  /**
    * Handles the click event on the couch.
    *
    * @param event the mouse event
@@ -98,58 +116,8 @@ public class RoomController {
     }
   }
 
-  /**
-   * Handles the click event on the computer.
-   *
-   * @param event the mouse event
-   */
   @FXML
-  public void clickComputer(MouseEvent event) {
-    System.out.println("computer clicked");
-
-    Rectangle rectangle = (Rectangle) event.getSource();
-    Scene sceneRectangleIsIn = rectangle.getScene();
-    GameState.isInRoom = false;
-    chatLabel.setText("");
-    sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
-    // Resizing the window so the larger scene fits
-    sceneRectangleIsIn.getWindow().sizeToScene();
-  }
-
-  private void updateLabel() {
-    timerLabel.setText(
-        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
-
-    if (GameState.isInRoom && GameState.isRiddleResolved && GameState.isFirstTimeInLivingRoom) {
-      String sentence = getAiHelpMessage();
-      GameState.isInRoom = false;
-      Task<Void> speakTask =
-          new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-
-              textToSpeech.speak(sentence);
-
-              return null;
-            }
-          };
-      Thread speakThread = new Thread(speakTask);
-      speakThread.setDaemon(true);
-      speakThread.start();
-      speakThread.interrupt();
-      Platform.runLater(
-          () -> {
-            chatLabel.setText(sentence);
-          });
-    }
-    if (GameState.isTimeReached) {
-      // Timer has reached zero, switch to the desired scene
-      switchToGameOverScene();
-    }
-  }
-
-  @FXML
-  public void onClickHelpButton(ActionEvent event) {
+  private void onClickHelpButton(ActionEvent event) {
     System.out.println("help button clicked");
 
     // Disable the help button temporarily to prevent multiple clicks
@@ -198,26 +166,37 @@ public class RoomController {
     aiChatThread.start();
   }
 
-  private void switchToGameOverScene() {
+  private void updateLabel() {
+    timerLabel.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
 
-    textToSpeech.terminate();
-    Platform.runLater(
-        () -> {
-          Scene currentScene = timerLabel.getScene();
-          if (currentScene != null) {
-            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
-            currentScene.getWindow().sizeToScene();
-            chatLabel.setText("");
-          }
-        });
+    if (GameState.isInRoom && GameState.isRiddleResolved && GameState.isFirstTimeInLivingRoom) {
+      String sentence = getAiHelpMessage();
+      GameState.isInRoom = false;
+      Task<Void> speakTask =
+          new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+              textToSpeech.speak(sentence);
+
+              return null;
+            }
+          };
+      Thread speakThread = new Thread(speakTask);
+      speakThread.setDaemon(true);
+      speakThread.start();
+      speakThread.interrupt();
+      Platform.runLater(
+          () -> {
+            chatLabel.setText(sentence);
+          });
+    }
+    if (GameState.isTimeReached) {
+      // Timer has reached zero, switch to the desired scene
+      switchToGameOverScene();
+    }
   }
-
-  private String[] chatSentences = {
-    "Welcome to the escape room!",
-    "You have 2 minutes to escape the room.",
-    "If you get stuck, use the Hint button to ask the game master for a clue!",
-    ""
-  };
 
   private String getAiHelpMessage() {
     try {
@@ -242,6 +221,27 @@ public class RoomController {
       return "Sorry, I couldn't retrieve the help message.";
     }
   }
+
+  private void switchToGameOverScene() {
+
+    textToSpeech.terminate();
+    Platform.runLater(
+        () -> {
+          Scene currentScene = timerLabel.getScene();
+          if (currentScene != null) {
+            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+            currentScene.getWindow().sizeToScene();
+            chatLabel.setText("");
+          }
+        });
+  }
+
+  private String[] chatSentences = {
+    "Welcome to the escape room!",
+    "You have 2 minutes to escape the room.",
+    "If you get stuck, use the Hint button to ask the game master for a clue!",
+    ""
+  };
 
   private void startUpdateLabelTask() {
     // Update the timer label every second
