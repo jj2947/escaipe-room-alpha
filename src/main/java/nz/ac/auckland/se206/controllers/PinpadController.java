@@ -66,31 +66,8 @@ public class PinpadController {
     updateThread.start();
   }
 
-  private void updateLabel() {
-    timerLabel3.setText(
-        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
-
-    if (GameState.isTimeReached) {
-      // Timer has reached zero, switch to the desired scene
-      switchToGameOverScene();
-    }
-  }
-
-  private void switchToGameOverScene() {
-    updateThread.interrupt();
-    textToSpeech.terminate();
-    Platform.runLater(
-        () -> {
-          Scene currentScene = timerLabel3.getScene();
-          if (currentScene != null) {
-            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
-            currentScene.getWindow().sizeToScene();
-          }
-        });
-  }
-
   @FXML
-  public void onClickHelp() {
+  private void onClickHelp() {
     System.out.println("help button clicked");
 
     textField.setText("");
@@ -98,68 +75,68 @@ public class PinpadController {
     String sentence = "What is the code + " + randNum + "?";
     chatLabel.setText(sentence);
     Task<Void> speakTask =
-          new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
 
-              textToSpeech.speak(sentence);
+            textToSpeech.speak(sentence);
 
-              return null;
-            }
-          };
-      Thread speakThread = new Thread(speakTask);
-      speakThread.setDaemon(true);
-      speakThread.start();
-      speakThread.interrupt();
+            return null;
+          }
+        };
+    Thread speakThread = new Thread(speakTask);
+    speakThread.setDaemon(true);
+    speakThread.start();
+    speakThread.interrupt();
   }
 
   @FXML
-  public void onClickOne() {
+  private void onClickOne() {
     updateTextField("1");
   }
 
   @FXML
-  public void onClickTwo() {
+  private void onClickTwo() {
     updateTextField("2");
   }
 
   @FXML
-  public void onClickThree() {
+  private void onClickThree() {
     updateTextField("3");
   }
 
   @FXML
-  public void onClickFour() {
+  private void onClickFour() {
     updateTextField("4");
   }
 
   @FXML
-  public void onClickFive() {
+  private void onClickFive() {
     updateTextField("5");
   }
 
   @FXML
-  public void onClickSix() {
+  private void onClickSix() {
     updateTextField("6");
   }
 
   @FXML
-  public void onClickSeven() {
+  private void onClickSeven() {
     updateTextField("7");
   }
 
   @FXML
-  public void onClickEight() {
+  private void onClickEight() {
     updateTextField("8");
   }
 
   @FXML
-  public void onClickNine() {
+  private void onClickNine() {
     updateTextField("9");
   }
 
   @FXML
-  public void onClickZero() {
+  private void onClickZero() {
     updateTextField("0");
   }
 
@@ -219,7 +196,7 @@ public class PinpadController {
   }
 
   @FXML
-  public void onEnter() {
+  private void onEnter() {
     int answer = Integer.parseInt(GameState.Code) + randNum;
     String answerString = Integer.toString(answer);
     String input = stripString(textField.getText());
@@ -255,7 +232,7 @@ public class PinpadController {
   }
 
   @FXML
-  public void onBack() {
+  private void onBack() {
     Scene currentScene = timerLabel3.getScene();
     Platform.runLater(
         () -> {
@@ -265,7 +242,7 @@ public class PinpadController {
   }
 
   @FXML
-  public void onClear() {
+  private void onClear() {
     numsEntered = 0;
     textField.setText("_ _ _ _");
     updateTextField(null);
@@ -273,5 +250,28 @@ public class PinpadController {
 
   private String stripString(String str) {
     return str.replaceAll("[^a-zA-Z0-9]", "");
+  }
+
+  private void updateLabel() {
+    timerLabel3.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+
+    if (GameState.isTimeReached) {
+      // Timer has reached zero, switch to the desired scene
+      switchToGameOverScene();
+    }
+  }
+
+  private void switchToGameOverScene() {
+    updateThread.interrupt();
+    textToSpeech.terminate();
+    Platform.runLater(
+        () -> {
+          Scene currentScene = timerLabel3.getScene();
+          if (currentScene != null) {
+            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+            currentScene.getWindow().sizeToScene();
+          }
+        });
   }
 }

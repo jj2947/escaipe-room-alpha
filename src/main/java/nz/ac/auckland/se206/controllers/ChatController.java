@@ -26,7 +26,7 @@ public class ChatController {
   @FXML private TextField inputText;
   @FXML private Button sendButton;
   @FXML private Label timerLabel2;
-  @FXML private Button backButton;  
+  @FXML private Button backButton;
   private Thread updateThread;
   private Thread initializeThread;
   private Thread runGptThread;
@@ -51,8 +51,7 @@ public class ChatController {
           @Override
           protected Void call() throws Exception {
             // Your initialization code here
-            runGpt(
-                new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("rocket")));
+            runGpt(new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("rocket")));
             timer = GameState.timer;
 
             // Update the timer label every second
@@ -132,7 +131,7 @@ public class ChatController {
         };
 
     // Execute the background task in a new thread
-     runGptThread = new Thread(backgroundTask);
+    runGptThread = new Thread(backgroundTask);
     runGptThread.setDaemon(true);
     runGptThread.start();
   }

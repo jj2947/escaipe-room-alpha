@@ -63,83 +63,6 @@ public class LivingRoomController {
   }
 
   @FXML
-  public void onHint(ActionEvent event) {
-    // Hint button action code goes here
-    System.out.println("help button clicked");
-
-    // Disable the help button temporarily to prevent multiple clicks
-    hintButton.setDisable(true);
-
-    // Set the chat label to loading message
-    chatLabel.setText("Loading...");
-
-    // Run the AI chat in the background
-    Task<Void> aiChatTask =
-        new Task<Void>() {
-          @Override
-          protected Void call() throws Exception {
-            try {
-              String helpMessage = getAIHelpMessage(); // Get AI-generated help message
-              Task<Void> speakTask =
-                  new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-
-                      textToSpeech.speak(helpMessage);
-
-                      return null;
-                    }
-                  };
-              Thread speakThread = new Thread(speakTask);
-              speakThread.setDaemon(true);
-              speakThread.start();
-              speakThread.interrupt();
-              Platform.runLater(
-                  () -> {
-                    chatLabel.setText(helpMessage);
-                  });
-            } catch (Exception e) {
-              e.printStackTrace();
-            } finally {
-              // Re-enable the help button
-              Platform.runLater(() -> hintButton.setDisable(false));
-            }
-            return null;
-          }
-        };
-
-    // Start the AI chat task in a new thread
-    Thread aiChatThread = new Thread(aiChatTask);
-    aiChatThread.setDaemon(true);
-    aiChatThread.start();
-    aiChatThread.interrupt();
-  }
-
-  private String getAIHelpMessage() {
-    try {
-      // Run the AI chat and get the response
-      if (!GameState.isKeyFound) {
-        System.out.println("riddle resolved, key not found");
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getKeyHint()));
-      } else {
-        System.out.println("key found");
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getDoorHint()));
-      }
-
-      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
-      Choice result = chatCompletionResult.getChoices().iterator().next();
-      String helpMessage = result.getChatMessage().getContent();
-      chatCompletionRequest.addMessage(result.getChatMessage());
-      return helpMessage;
-    } catch (ApiProxyException e) {
-      e.printStackTrace();
-      return "Sorry, I couldn't retrieve the help message.";
-    }
-  }
-
-  @FXML
   public void clickDoor(MouseEvent event) {
     System.out.println("door clicked");
     if (GameState.isKeyFound) {
@@ -152,7 +75,7 @@ public class LivingRoomController {
   }
 
   @FXML
-  public void onGoBack(ActionEvent event) {
+  private void onGoBack(ActionEvent event) {
     // Back button action code goes here
     Button button = (Button) event.getSource();
     Scene sceneButtonIsIn = button.getScene();
@@ -190,6 +113,59 @@ public class LivingRoomController {
     GameState.isKeyFound = true;
     pinpad.setVisible(true);
     speakThread.interrupt();
+  }
+
+  @FXML
+  private void onHint(ActionEvent event) {
+    // Hint button action code goes here
+    System.out.println("help button clicked");
+
+    // Disable the help button temporarily to prevent multiple clicks
+    hintButton.setDisable(true);
+
+    // Set the chat label to loading message
+    chatLabel.setText("Loading...");
+
+    // Run the AI chat in the background
+    Task<Void> aiChatTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            try {
+              String helpMessage = getAiHelpMessage(); // Get AI-generated help message
+              Task<Void> speakTask =
+                  new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+
+                      textToSpeech.speak(helpMessage);
+
+                      return null;
+                    }
+                  };
+              Thread speakThread = new Thread(speakTask);
+              speakThread.setDaemon(true);
+              speakThread.start();
+              speakThread.interrupt();
+              Platform.runLater(
+                  () -> {
+                    chatLabel.setText(helpMessage);
+                  });
+            } catch (Exception e) {
+              e.printStackTrace();
+            } finally {
+              // Re-enable the help button
+              Platform.runLater(() -> hintButton.setDisable(false));
+            }
+            return null;
+          }
+        };
+
+    // Start the AI chat task in a new thread
+    Thread aiChatThread = new Thread(aiChatTask);
+    aiChatThread.setDaemon(true);
+    aiChatThread.start();
+    aiChatThread.interrupt();
   }
 
   private void updateLabel() {
@@ -270,5 +246,29 @@ public class LivingRoomController {
             currentScene.getWindow().sizeToScene();
           }
         });
+  }
+
+  private String getAiHelpMessage() {
+    try {
+      // Run the AI chat and get the response
+      if (!GameState.isKeyFound) {
+        System.out.println("riddle resolved, key not found");
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getKeyHint()));
+      } else {
+        System.out.println("key found");
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getDoorHint()));
+      }
+
+      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
+      Choice result = chatCompletionResult.getChoices().iterator().next();
+      String helpMessage = result.getChatMessage().getContent();
+      chatCompletionRequest.addMessage(result.getChatMessage());
+      return helpMessage;
+    } catch (ApiProxyException e) {
+      e.printStackTrace();
+      return "Sorry, I couldn't retrieve the help message.";
+    }
   }
 }
