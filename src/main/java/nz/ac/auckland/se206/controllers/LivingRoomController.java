@@ -36,68 +36,6 @@ public class LivingRoomController {
   private Timer timer;
 
   @FXML
-  private void onGoBack(ActionEvent event) {
-    // Back button action code goes here
-    Button button = (Button) event.getSource();
-    Scene sceneButtonIsIn = button.getScene();
-    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
-    sceneButtonIsIn.getWindow().sizeToScene();
-  }
-
-  @FXML
-  private void onHint(ActionEvent event) {
-    // Hint button action code goes here
-    System.out.println("help button clicked");
-
-    // Disable the help button temporarily to prevent multiple clicks
-    hintButton.setDisable(true);
-
-    // Set the chat label to loading message
-    chatLabel.setText("Loading...");
-
-    // Run the AI chat in the background
-    Task<Void> aiChatTask =
-        new Task<Void>() {
-          @Override
-          protected Void call() throws Exception {
-            try {
-              String helpMessage = getAiHelpMessage(); // Get AI-generated help message
-              Task<Void> speakTask =
-                  new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-
-                      textToSpeech.speak(helpMessage);
-
-                      return null;
-                    }
-                  };
-              Thread speakThread = new Thread(speakTask);
-              speakThread.setDaemon(true);
-              speakThread.start();
-              speakThread.interrupt();
-              Platform.runLater(
-                  () -> {
-                    chatLabel.setText(helpMessage);
-                  });
-            } catch (Exception e) {
-              e.printStackTrace();
-            } finally {
-              // Re-enable the help button
-              Platform.runLater(() -> hintButton.setDisable(false));
-            }
-            return null;
-          }
-        };
-
-    // Start the AI chat task in a new thread
-    Thread aiChatThread = new Thread(aiChatTask);
-    aiChatThread.setDaemon(true);
-    aiChatThread.start();
-    aiChatThread.interrupt();
-  }
-
-  @FXML
   public void clickDoor(MouseEvent event) {
     System.out.println("door clicked");
     if (GameState.isKeyFound) {
@@ -170,6 +108,75 @@ public class LivingRoomController {
     updateThread.start();
   }
 
+  @FXML
+  private void onGoBack(ActionEvent event) {
+    // Back button action code goes here
+    Button button = (Button) event.getSource();
+    Scene sceneButtonIsIn = button.getScene();
+    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
+    sceneButtonIsIn.getWindow().sizeToScene();
+  }
+
+  @FXML
+  private void onHint(ActionEvent event) {
+    // Hint button action code goes here
+    System.out.println("help button clicked");
+
+    // Disable the help button temporarily to prevent multiple clicks
+    hintButton.setDisable(true);
+
+    // Set the chat label to loading message
+    chatLabel.setText("Loading...");
+
+    // Run the AI chat in the background
+    Task<Void> aiChatTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            try {
+              String helpMessage = getAiHelpMessage(); // Get AI-generated help message
+              Task<Void> speakTask =
+                  new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+
+                      textToSpeech.speak(helpMessage);
+
+                      return null;
+                    }
+                  };
+              Thread speakThread = new Thread(speakTask);
+              speakThread.setDaemon(true);
+              speakThread.start();
+              speakThread.interrupt();
+              Platform.runLater(
+                  () -> {
+                    chatLabel.setText(helpMessage);
+                  });
+            } catch (Exception e) {
+              e.printStackTrace();
+            } finally {
+              // Re-enable the help button
+              Platform.runLater(() -> hintButton.setDisable(false));
+            }
+            return null;
+          }
+        };
+
+    // Start the AI chat task in a new thread
+    Thread aiChatThread = new Thread(aiChatTask);
+    aiChatThread.setDaemon(true);
+    aiChatThread.start();
+    aiChatThread.interrupt();
+  }
+
+  private String[] chatSentences = {
+    "Welcome to the living room!",
+    "Use the riddle's answer to find a code and unlock the door.",
+    "Good Luck!",
+    ""
+  };
+
   private void updateChatLabel() {
     // Set up and start the chatLabel task
     Task<Void> chatTask =
@@ -191,7 +198,7 @@ public class LivingRoomController {
                       return null;
                     }
                   };
-                  // Start the speak task in a new thread
+              // Start the speak task in a new thread
               Thread speakThread = new Thread(speakTask);
               speakThread.setDaemon(true);
               speakThread.start();
@@ -214,7 +221,7 @@ public class LivingRoomController {
             return null;
           }
         };
-        // Start the chat task in a new thread
+    // Start the chat task in a new thread
     Thread chatThread = new Thread(chatTask);
     chatThread.setDaemon(true);
     chatThread.start();
@@ -235,13 +242,6 @@ public class LivingRoomController {
       GameState.isFirstTimeInLivingRoom = false;
     }
   }
-
-  private String[] chatSentences = {
-    "Welcome to the living room!",
-    "Use the riddle's answer to find a code and unlock the door.",
-    "Good Luck!",
-    ""
-  };
 
   private void switchToGameOverScene() {
     textToSpeech.terminate();
