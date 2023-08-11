@@ -170,6 +170,29 @@ public class LivingRoomController {
     aiChatThread.interrupt();
   }
 
+  private String[] chatSentences = {
+    "Welcome to the living room!",
+    "Use the riddle's answer to find a code and unlock the door.",
+    "Good Luck!",
+    ""
+  };
+
+  private void updateLabel() {
+    timerLabel.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+
+    if (GameState.isTimeReached) {
+      // Timer has reached zero, switch to the desired scene
+      switchToGameOverScene();
+    }
+
+    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
+      updateChatLabel();
+      GameState.isInLivingRoom = false;
+      GameState.isFirstTimeInLivingRoom = false;
+    }
+  }
+
   private void updateChatLabel() {
     // Set up and start the chatLabel task
     Task<Void> chatTask =
@@ -220,22 +243,6 @@ public class LivingRoomController {
     chatThread.start();
   }
 
-  private void updateLabel() {
-    timerLabel.setText(
-        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
-
-    if (GameState.isTimeReached) {
-      // Timer has reached zero, switch to the desired scene
-      switchToGameOverScene();
-    }
-
-    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
-      updateChatLabel();
-      GameState.isInLivingRoom = false;
-      GameState.isFirstTimeInLivingRoom = false;
-    }
-  }
-
   private void switchToGameOverScene() {
     textToSpeech.terminate();
 
@@ -248,13 +255,6 @@ public class LivingRoomController {
           }
         });
   }
-
-  private String[] chatSentences = {
-    "Welcome to the living room!",
-    "Use the riddle's answer to find a code and unlock the door.",
-    "Good Luck!",
-    ""
-  };
 
   private String getAiHelpMessage() {
     try {

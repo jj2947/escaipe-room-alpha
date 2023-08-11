@@ -82,7 +82,8 @@ public class RoomController {
    *
    * @param event the mouse event
    */
-  @FXML
+
+   @FXML
   public void clickComputer(MouseEvent event) {
     System.out.println("computer clicked");
 
@@ -116,7 +117,7 @@ public class RoomController {
     }
   }
 
-  @FXML
+   @FXML
   private void onClickHelpButton(ActionEvent event) {
     System.out.println("help button clicked");
 
@@ -216,6 +217,37 @@ public class RoomController {
         });
   }
 
+  private String[] chatSentences = {
+    "Welcome to the escape room!",
+    "You have 2 minutes to escape the room.",
+    "If you get stuck, use the Hint button to ask the game master for a clue!",
+    ""
+  };
+  
+  private String getAiHelpMessage() {
+    try {
+      // Run the AI chat and get the response
+      if (GameState.isRiddleResolved) {
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getCouchHint()));
+        System.out.println("riddle resolved");
+      } else {
+        System.out.println("key not found, riddle not resolved");
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getStartHint()));
+      }
+
+      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
+      Choice result = chatCompletionResult.getChoices().iterator().next();
+      String helpMessage = result.getChatMessage().getContent();
+      chatCompletionRequest.addMessage(result.getChatMessage());
+      return helpMessage;
+    } catch (ApiProxyException e) {
+      e.printStackTrace();
+      return "Sorry, I couldn't retrieve the help message.";
+    }
+  }
+
   private void startChatTask() {
     // Run the AI chat in the background
     Task<Void> chatTask =
@@ -288,36 +320,5 @@ public class RoomController {
     updateThread = new Thread(updateLabelTask);
     updateThread.setDaemon(true);
     updateThread.start();
-  }
-
-  private String[] chatSentences = {
-    "Welcome to the escape room!",
-    "You have 2 minutes to escape the room.",
-    "If you get stuck, use the Hint button to ask the game master for a clue!",
-    ""
-  };
-  
-  private String getAiHelpMessage() {
-    try {
-      // Run the AI chat and get the response
-      if (GameState.isRiddleResolved) {
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getCouchHint()));
-        System.out.println("riddle resolved");
-      } else {
-        System.out.println("key not found, riddle not resolved");
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getStartHint()));
-      }
-
-      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
-      Choice result = chatCompletionResult.getChoices().iterator().next();
-      String helpMessage = result.getChatMessage().getContent();
-      chatCompletionRequest.addMessage(result.getChatMessage());
-      return helpMessage;
-    } catch (ApiProxyException e) {
-      e.printStackTrace();
-      return "Sorry, I couldn't retrieve the help message.";
-    }
   }
 }
