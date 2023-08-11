@@ -62,18 +62,6 @@ public class LivingRoomController {
     updateThread.start();
   }
 
-  @FXML
-  public void clickDoor(MouseEvent event) {
-    System.out.println("door clicked");
-    if (GameState.isKeyFound) {
-      Scene sceneButtonIsIn = door.getScene();
-      sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
-      sceneButtonIsIn.getWindow().sizeToScene();
-    } else {
-      chatLabel.setText("You need to use the riddle to find the code first!");
-    }
-  }
-
   /**
    * Handles the click event on the controller.
    *
@@ -106,15 +94,6 @@ public class LivingRoomController {
     GameState.isKeyFound = true;
     pinpad.setVisible(true);
     speakThread.interrupt();
-  }
-
-  @FXML
-  private void onGoBack(ActionEvent event) {
-    // Back button action code goes here
-    Button button = (Button) event.getSource();
-    Scene sceneButtonIsIn = button.getScene();
-    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
-    sceneButtonIsIn.getWindow().sizeToScene();
   }
 
   @FXML
@@ -170,26 +149,15 @@ public class LivingRoomController {
     aiChatThread.interrupt();
   }
 
-  private String[] chatSentences = {
-    "Welcome to the living room!",
-    "Use the riddle's answer to find a code and unlock the door.",
-    "Good Luck!",
-    ""
-  };
-
-  private void updateLabel() {
-    timerLabel.setText(
-        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
-
-    if (GameState.isTimeReached) {
-      // Timer has reached zero, switch to the desired scene
-      switchToGameOverScene();
-    }
-
-    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
-      updateChatLabel();
-      GameState.isInLivingRoom = false;
-      GameState.isFirstTimeInLivingRoom = false;
+  @FXML
+  public void clickDoor(MouseEvent event) {
+    System.out.println("door clicked");
+    if (GameState.isKeyFound) {
+      Scene sceneButtonIsIn = door.getScene();
+      sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
+      sceneButtonIsIn.getWindow().sizeToScene();
+    } else {
+      chatLabel.setText("You need to use the riddle to find the code first!");
     }
   }
 
@@ -241,6 +209,38 @@ public class LivingRoomController {
     Thread chatThread = new Thread(chatTask);
     chatThread.setDaemon(true);
     chatThread.start();
+  }
+
+  @FXML
+  private void onGoBack(ActionEvent event) {
+    // Back button action code goes here
+    Button button = (Button) event.getSource();
+    Scene sceneButtonIsIn = button.getScene();
+    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
+    sceneButtonIsIn.getWindow().sizeToScene();
+  }
+
+  private String[] chatSentences = {
+    "Welcome to the living room!",
+    "Use the riddle's answer to find a code and unlock the door.",
+    "Good Luck!",
+    ""
+  };
+
+  private void updateLabel() {
+    timerLabel.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+
+    if (GameState.isTimeReached) {
+      // Timer has reached zero, switch to the desired scene
+      switchToGameOverScene();
+    }
+
+    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
+      updateChatLabel();
+      GameState.isInLivingRoom = false;
+      GameState.isFirstTimeInLivingRoom = false;
+    }
   }
 
   private void switchToGameOverScene() {
