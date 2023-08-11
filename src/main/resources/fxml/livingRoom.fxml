@@ -15,7 +15,12 @@
             <Image url="@../images/LivingRoom.jpg" />
          </image>
       </ImageView>
-      <Button fx:id="hintButton" layoutX="25.0" layoutY="598.0" mnemonicParsing="false" onAction="#onHint" prefHeight="33.0" prefWidth="138.0" style="-fx-background-color: clear; -fx-border-color: white; -fx-border-width: 5;" text="Hint" textFill="WHITE">
+      <ImageView fx:id="pinpad" fitHeight="72.0" fitWidth="60.0" layoutX="828.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../images/pinpad.jpeg" />
+         </image>
+      </ImageView>
+      <Button fx:id="hintButton" layoutX="25.0" layoutY="598.0" mnemonicParsing="false" onAction="#onHint" prefHeight="33.0" prefWidth="138.0" style="-fx-background-color: clear; -fx-border-color: white; -fx-border-width: 5;" styleClass="hintButton" stylesheets="@../css/stylesheet.css" text="Hint" textFill="WHITE">
          <font>
             <Font name="Arial Rounded MT Bold" size="20.0" />
          </font>
@@ -36,11 +41,11 @@
          </font>
       </Button>
       <Rectangle fx:id="rocket" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="77.0" layoutX="706.0" layoutY="248.0" onMouseClicked="#clickRocket" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="47.0" />
-      <Rectangle fx:id="door" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="377.0" layoutX="816.0" layoutY="103.0" onMouseClicked="#clickDoor" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="77.0" />
       <Label fx:id="codeLabel" alignment="CENTER" layoutX="405.0" layoutY="253.0" prefHeight="114.0" prefWidth="161.0" textFill="#30ed00">
          <font>
             <Font name="Arial Rounded MT Bold" size="55.0" />
          </font>
       </Label>
+      <Rectangle fx:id="door" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="377.0" layoutX="823.0" layoutY="109.0" onMouseClicked="#clickDoor" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="77.0" />
    </children>
 </Pane>

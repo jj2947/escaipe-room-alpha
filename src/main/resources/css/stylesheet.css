@@ -7,3 +7,7 @@
 .pane {
     -fx-background-color: grey;
 }
+
+.button:disabled .hintButton:disabled{
+    -fx-opacity: 0.5;
+}

@@ -10,7 +10,8 @@ public class SceneManager {
     ROOM,
     ESCAPED,
     LOST,
-    PINPAD
+    PINPAD,
+    LIVING_ROOM
   }
 
   private static HashMap<AppUi, Parent> sceneMap = new HashMap<AppUi, Parent>();
