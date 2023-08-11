@@ -126,6 +126,18 @@ public class LivingRoomController {
   }
 
   @FXML
+  public void clickDoor(MouseEvent event) {
+    System.out.println("door clicked");
+    if (GameState.isKeyFound) {
+      Scene sceneButtonIsIn = door.getScene();
+      sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
+      sceneButtonIsIn.getWindow().sizeToScene();
+    } else {
+      chatLabel.setText("You need to use the riddle to find the code first!");
+    }
+  }
+
+  @FXML
   public void onGoBack(ActionEvent event) {
     // Back button action code goes here
     Button button = (Button) event.getSource();
@@ -181,6 +193,57 @@ public class LivingRoomController {
         GameState.isFirstTimeInLivingRoom = false;
     }
   }
+
+  private void updateChatLabel() {
+    // Set up and start the chatLabel task
+    Task<Void> chatTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            int currentSentenceIndex = 0;
+            while (!Thread.currentThread().isInterrupted()) {
+              String sentence = chatSentences[currentSentenceIndex];
+              Task<Void> speakTask =
+                  new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+
+                      textToSpeech.speak(sentence);
+
+                      return null;
+                    }
+                  };
+              Thread speakThread = new Thread(speakTask);
+              speakThread.setDaemon(true);
+              speakThread.start();
+              speakThread.interrupt();
+              Platform.runLater(
+                  () -> {
+                    chatLabel.setText(sentence);
+                  });
+
+              if (currentSentenceIndex < chatSentences.length - 1) {
+                currentSentenceIndex++;
+                Thread.sleep(3 * 1000);
+              } else {
+                Thread.currentThread().interrupt();
+              }
+            }
+            return null;
+          }
+        };
+
+    Thread chatThread = new Thread(chatTask);
+    chatThread.setDaemon(true);
+    chatThread.start();
+  }
+
+  private String[] chatSentences = {
+    "Welcome to the living room!",
+    "Use the riddle's answer to find a code and unlock the door.",
+    "Good Luck!",
+    ""
+  };
 
   private void switchToGameOverScene() {
     textToSpeech.terminate();
