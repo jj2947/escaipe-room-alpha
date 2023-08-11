@@ -10,33 +10,35 @@ public class GptPromptEngineering {
    * @return the generated prompt engineering string
    */
   public static String getRiddleWithGivenWord(String wordToGuess) {
+    System.out.println("word to guess: " + wordToGuess);
     return "You are the gamemaster of an escape room. In a short message under 20 words, tell the"
         + " player a riddle with"
-        + " answer"
+        + " answer "
         + wordToGuess
-        + ". Do not ask the user for answer. Only after the user replies, if their answer is"
-        + " correct you should respond with the word Correct and a short funny congratulatory"
-        + " message that tells the user to go back to room. Only if they ask or guess incorrectly,"
-        + " give them a hint. You must never reveal the answer to the player.";
+        + ". Do not ask the user for answer. Only after the user replies and only if their answer"
+        + " is correct, you should respond with the word Correct and a short funny congratulatory"
+        + " message that tells the user to go back to room and contains a rocket fact. Only if they"
+        + " ask or guess incorrectly, give them a hint. You must never reveal the answer to the"
+        + " player.";
   }
 
-  public static String getDoorHint() {
-    return "You are the gamemaster of an escape room. In 15 words or less tell the player to unlock"
-        + " the door to end the game";
+  public static String getCouchHint() {
+    return "You are the gamemaster of an escape room. In 15 words or less tell the player to"
+        + "sit on couch to teleport";
   }
 
   public static String getKeyHint() {
-    return "You are the gamemaster of an escape room. In 15 words or less tell user  they need to"
-        + " use the riddle they solved to find the key to escape. Don't mention the door";
+    return "You are the gamemaster of an escape room. In 15 words or less tell user they need to"
+        + " use the riddle they solved to help them escape.";
   }
 
   public static String getStartHint() {
     return "You are the gamemaster of an escape room. In 15 words or less tell user that"
-        + " they need to open the door to start";
+        + " they need to go to the computer to start";
   }
 
-  public static String getCodeHint() {
+  public static String getDoorHint() {
     return "You are the gamemaster of an escape room. In 15 words or less tell user that"
-        + " they need to enter the code given by the computer to escape the room";
+        + " they need to use the code given to unlock the door to escape the room";
   }
 }
