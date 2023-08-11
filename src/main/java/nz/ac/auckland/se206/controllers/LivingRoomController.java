@@ -71,7 +71,7 @@ public class LivingRoomController {
     chatLabel.setText(message);
     // Generate a random code
     GameState.Code = Integer.toString((int) (Math.random() * 10000));
-    while (Integer.parseInt(GameState.Code) > 9000) {
+    while (Integer.parseInt(GameState.Code) > 9000 || Integer.parseInt(GameState.Code) < 1000) {
       GameState.Code = Integer.toString((int) (Math.random() * 10000));
     }
     // Display the code and show the pinpad
