@@ -43,7 +43,7 @@ public class ChatController {
   @FXML
   public void initialize() throws ApiProxyException {
     chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(0.6).setTopP(0.4).setMaxTokens(100);
+        new ChatCompletionRequest().setN(1).setTemperature(0.6).setTopP(0.4).setMaxTokens(50);
     appendChatMessage(
         new ChatMessage("assistant", "Solve the riddle to find the key and escape the room!"));
     Task<Void> initializeTask =

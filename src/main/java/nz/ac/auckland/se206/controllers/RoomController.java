@@ -191,6 +191,20 @@ public class RoomController {
     if (GameState.isInRoom && GameState.isRiddleResolved && GameState.isFirstTimeInLivingRoom) {
       String sentence = getAIHelpMessage();
       GameState.isInRoom = false;
+      Task<Void> speakTask =
+          new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+              textToSpeech.speak(sentence);
+
+              return null;
+            }
+          };
+      Thread speakThread = new Thread(speakTask);
+      speakThread.setDaemon(true);
+      speakThread.start();
+      speakThread.interrupt();
       Platform.runLater(
           () -> {
             chatLabel.setText(sentence);
@@ -219,6 +233,19 @@ public class RoomController {
           protected Void call() throws Exception {
             try {
               String helpMessage = getAIHelpMessage(); // Get AI-generated help message
+              Task<Void> speakTask =
+                  new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+
+                      textToSpeech.speak(helpMessage);
+
+                      return null;
+                    }
+                  };
+              Thread speakThread = new Thread(speakTask);
+              speakThread.setDaemon(true);
+              speakThread.start();
               Platform.runLater(
                   () -> {
                     chatLabel.setText(helpMessage);

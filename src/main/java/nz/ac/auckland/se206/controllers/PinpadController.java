@@ -95,7 +95,22 @@ public class PinpadController {
 
     textField.setText("");
     numsEntered = 0;
-    chatLabel.setText("What is the code + " + randNum + "?");
+    String sentence = "What is the code + " + randNum + "?";
+    chatLabel.setText(sentence);
+    Task<Void> speakTask =
+          new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+              textToSpeech.speak(sentence);
+
+              return null;
+            }
+          };
+      Thread speakThread = new Thread(speakTask);
+      speakThread.setDaemon(true);
+      speakThread.start();
+      speakThread.interrupt();
   }
 
   @FXML

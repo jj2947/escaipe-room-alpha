@@ -80,6 +80,20 @@ public class LivingRoomController {
           protected Void call() throws Exception {
             try {
               String helpMessage = getAIHelpMessage(); // Get AI-generated help message
+              Task<Void> speakTask =
+                  new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+
+                      textToSpeech.speak(helpMessage);
+
+                      return null;
+                    }
+                  };
+              Thread speakThread = new Thread(speakTask);
+              speakThread.setDaemon(true);
+              speakThread.start();
+              speakThread.interrupt();
               Platform.runLater(
                   () -> {
                     chatLabel.setText(helpMessage);
@@ -190,7 +204,7 @@ public class LivingRoomController {
     if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
       updateChatLabel();
       GameState.isInLivingRoom = false;
-        GameState.isFirstTimeInLivingRoom = false;
+      GameState.isFirstTimeInLivingRoom = false;
     }
   }
 
