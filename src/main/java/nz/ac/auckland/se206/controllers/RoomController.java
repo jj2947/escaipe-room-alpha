@@ -77,6 +77,45 @@ public class RoomController {
     System.out.println("key " + event.getCode() + " released");
   }
 
+  /**
+   * Handles the click event on the computer.
+   *
+   * @param event the mouse event
+   */
+  @FXML
+  public void clickComputer(MouseEvent event) {
+    System.out.println("computer clicked");
+
+    Rectangle rectangle = (Rectangle) event.getSource();
+    Scene sceneRectangleIsIn = rectangle.getScene();
+    GameState.isInRoom = false;
+    chatLabel.setText("");
+    sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
+    // Resizing the window so the larger scene fits
+    sceneRectangleIsIn.getWindow().sizeToScene();
+  }
+
+  /**
+   * Handles the click event on the couch.
+   *
+   * @param event the mouse event
+   * @throws IOException if there is an error loading the chat view
+   */
+  @FXML
+  public void clickCouch(MouseEvent event) throws IOException {
+    System.out.println("couch clicked");
+
+    if (GameState.isRiddleResolved) {
+      Rectangle rectangle = (Rectangle) event.getSource();
+      Scene sceneRectangleIsIn = rectangle.getScene();
+      GameState.isInRoom = false;
+      GameState.isInLivingRoom = true;
+      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.LIVING_ROOM));
+      sceneRectangleIsIn.getWindow().sizeToScene();
+      return;
+    }
+  }
+
   @FXML
   private void onClickHelpButton(ActionEvent event) {
     System.out.println("help button clicked");
@@ -129,45 +168,6 @@ public class RoomController {
     aiChatThread.start();
   }
 
-  /**
-   * Handles the click event on the computer.
-   *
-   * @param event the mouse event
-   */
-  @FXML
-  public void clickComputer(MouseEvent event) {
-    System.out.println("computer clicked");
-
-    Rectangle rectangle = (Rectangle) event.getSource();
-    Scene sceneRectangleIsIn = rectangle.getScene();
-    GameState.isInRoom = false;
-    chatLabel.setText("");
-    sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
-    // Resizing the window so the larger scene fits
-    sceneRectangleIsIn.getWindow().sizeToScene();
-  }
-
-  /**
-   * Handles the click event on the couch.
-   *
-   * @param event the mouse event
-   * @throws IOException if there is an error loading the chat view
-   */
-  @FXML
-  public void clickCouch(MouseEvent event) throws IOException {
-    System.out.println("couch clicked");
-
-    if (GameState.isRiddleResolved) {
-      Rectangle rectangle = (Rectangle) event.getSource();
-      Scene sceneRectangleIsIn = rectangle.getScene();
-      GameState.isInRoom = false;
-      GameState.isInLivingRoom = true;
-      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.LIVING_ROOM));
-      sceneRectangleIsIn.getWindow().sizeToScene();
-      return;
-    }
-  }
-
   private void updateLabel() {
     timerLabel.setText(
         String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
@@ -214,38 +214,6 @@ public class RoomController {
             chatLabel.setText("");
           }
         });
-  }
-  
-
-  private String[] chatSentences = {
-    "Welcome to the escape room!",
-    "You have 2 minutes to escape the room.",
-    "If you get stuck, use the Hint button to ask the game master for a clue!",
-    ""
-  };
-
-  private String getAiHelpMessage() {
-    try {
-      // Run the AI chat and get the response
-      if (GameState.isRiddleResolved) {
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getCouchHint()));
-        System.out.println("riddle resolved");
-      } else {
-        System.out.println("key not found, riddle not resolved");
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getStartHint()));
-      }
-
-      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
-      Choice result = chatCompletionResult.getChoices().iterator().next();
-      String helpMessage = result.getChatMessage().getContent();
-      chatCompletionRequest.addMessage(result.getChatMessage());
-      return helpMessage;
-    } catch (ApiProxyException e) {
-      e.printStackTrace();
-      return "Sorry, I couldn't retrieve the help message.";
-    }
   }
 
   private void startChatTask() {
@@ -320,5 +288,36 @@ public class RoomController {
     updateThread = new Thread(updateLabelTask);
     updateThread.setDaemon(true);
     updateThread.start();
+  }
+
+  private String[] chatSentences = {
+    "Welcome to the escape room!",
+    "You have 2 minutes to escape the room.",
+    "If you get stuck, use the Hint button to ask the game master for a clue!",
+    ""
+  };
+  
+  private String getAiHelpMessage() {
+    try {
+      // Run the AI chat and get the response
+      if (GameState.isRiddleResolved) {
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getCouchHint()));
+        System.out.println("riddle resolved");
+      } else {
+        System.out.println("key not found, riddle not resolved");
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getStartHint()));
+      }
+
+      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
+      Choice result = chatCompletionResult.getChoices().iterator().next();
+      String helpMessage = result.getChatMessage().getContent();
+      chatCompletionRequest.addMessage(result.getChatMessage());
+      return helpMessage;
+    } catch (ApiProxyException e) {
+      e.printStackTrace();
+      return "Sorry, I couldn't retrieve the help message.";
+    }
   }
 }

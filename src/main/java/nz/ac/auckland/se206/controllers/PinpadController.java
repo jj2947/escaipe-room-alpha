@@ -145,6 +145,7 @@ public class PinpadController {
 
     // Change the buttons enabled based on the number of digits entered
     if (number == null) {
+      // Clear button was pressed
       enterButton.disableProperty().setValue(true);
       oneButton.disableProperty().setValue(false);
       twoButton.disableProperty().setValue(false);

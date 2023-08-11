@@ -35,6 +35,33 @@ public class LivingRoomController {
   private ChatCompletionRequest chatCompletionRequest;
   private Timer timer;
 
+  public void initialize() {
+    // Initialization code goes here
+    chatCompletionRequest =
+        new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(0.5).setMaxTokens(25);
+
+    textToSpeech = new TextToSpeech();
+    timer = GameState.timer;
+
+    // Update the timer label every second
+    Task<Void> updateLabelTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            while (!GameState.isTimeReached) {
+              Thread.sleep(1000); // Wait for 1 second
+              Platform.runLater(() -> updateLabel());
+            }
+            return null;
+          }
+        };
+
+    // Create a new thread for the update task and start it
+    Thread updateThread = new Thread(updateLabelTask);
+    updateThread.setDaemon(true);
+    updateThread.start();
+  }
+
   @FXML
   public void clickDoor(MouseEvent event) {
     System.out.println("door clicked");
@@ -79,33 +106,6 @@ public class LivingRoomController {
     GameState.isKeyFound = true;
     pinpad.setVisible(true);
     speakThread.interrupt();
-  }
-
-  public void initialize() {
-    // Initialization code goes here
-    chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(0.5).setMaxTokens(25);
-
-    textToSpeech = new TextToSpeech();
-    timer = GameState.timer;
-
-    // Update the timer label every second
-    Task<Void> updateLabelTask =
-        new Task<Void>() {
-          @Override
-          protected Void call() throws Exception {
-            while (!GameState.isTimeReached) {
-              Thread.sleep(1000); // Wait for 1 second
-              Platform.runLater(() -> updateLabel());
-            }
-            return null;
-          }
-        };
-
-    // Create a new thread for the update task and start it
-    Thread updateThread = new Thread(updateLabelTask);
-    updateThread.setDaemon(true);
-    updateThread.start();
   }
 
   @FXML
@@ -169,13 +169,6 @@ public class LivingRoomController {
     aiChatThread.start();
     aiChatThread.interrupt();
   }
-
-  private String[] chatSentences = {
-    "Welcome to the living room!",
-    "Use the riddle's answer to find a code and unlock the door.",
-    "Good Luck!",
-    ""
-  };
 
   private void updateChatLabel() {
     // Set up and start the chatLabel task
@@ -255,6 +248,13 @@ public class LivingRoomController {
           }
         });
   }
+
+  private String[] chatSentences = {
+    "Welcome to the living room!",
+    "Use the riddle's answer to find a code and unlock the door.",
+    "Good Luck!",
+    ""
+  };
 
   private String getAiHelpMessage() {
     try {
