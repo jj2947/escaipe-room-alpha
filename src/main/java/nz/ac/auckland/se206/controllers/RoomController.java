@@ -82,8 +82,7 @@ public class RoomController {
    *
    * @param event the mouse event
    */
-
-   @FXML
+  @FXML
   public void clickComputer(MouseEvent event) {
     System.out.println("computer clicked");
 
@@ -117,7 +116,7 @@ public class RoomController {
     }
   }
 
-   @FXML
+  @FXML
   private void onClickHelpButton(ActionEvent event) {
     System.out.println("help button clicked");
 
@@ -223,7 +222,7 @@ public class RoomController {
     "If you get stuck, use the Hint button to ask the game master for a clue!",
     ""
   };
-  
+
   private String getAiHelpMessage() {
     try {
       // Run the AI chat and get the response
