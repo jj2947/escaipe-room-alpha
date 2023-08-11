@@ -35,6 +35,75 @@ public class LivingRoomController {
   private ChatCompletionRequest chatCompletionRequest;
   private Timer timer;
 
+  @FXML
+  private void onGoBack(ActionEvent event) {
+    // Back button action code goes here
+    Button button = (Button) event.getSource();
+    Scene sceneButtonIsIn = button.getScene();
+    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
+    sceneButtonIsIn.getWindow().sizeToScene();
+  }
+
+  private String[] chatSentences = {
+    "Welcome to the living room!",
+    "Use the riddle's answer to find a code and unlock the door.",
+    "Good Luck!",
+    ""
+  };
+
+  private void updateLabel() {
+    timerLabel.setText(
+        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
+
+    if (GameState.isTimeReached) {
+      // Timer has reached zero, switch to the desired scene
+      switchToGameOverScene();
+    }
+
+    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
+      updateChatLabel();
+      GameState.isInLivingRoom = false;
+      GameState.isFirstTimeInLivingRoom = false;
+    }
+  }
+
+  private void switchToGameOverScene() {
+    textToSpeech.terminate();
+
+    Platform.runLater(
+        () -> {
+          Scene currentScene = timerLabel.getScene();
+          if (currentScene != null) {
+            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+            currentScene.getWindow().sizeToScene();
+          }
+        });
+  }
+
+  private String getAiHelpMessage() {
+    try {
+      // Run the AI chat and get the response
+      if (!GameState.isKeyFound) {
+        System.out.println("riddle resolved, key not found");
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getKeyHint()));
+      } else {
+        System.out.println("key found");
+        chatCompletionRequest.addMessage(
+            new ChatMessage("user", GptPromptEngineering.getDoorHint()));
+      }
+
+      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
+      Choice result = chatCompletionResult.getChoices().iterator().next();
+      String helpMessage = result.getChatMessage().getContent();
+      chatCompletionRequest.addMessage(result.getChatMessage());
+      return helpMessage;
+    } catch (ApiProxyException e) {
+      e.printStackTrace();
+      return "Sorry, I couldn't retrieve the help message.";
+    }
+  }
+
   public void initialize() {
     // Initialization code goes here
     chatCompletionRequest =
@@ -60,40 +129,6 @@ public class LivingRoomController {
     Thread updateThread = new Thread(updateLabelTask);
     updateThread.setDaemon(true);
     updateThread.start();
-  }
-
-  /**
-   * Handles the click event on the controller.
-   *
-   * @param event the mouse event
-   */
-  @FXML
-  public void clickRocket(MouseEvent event) {
-    System.out.println("controller clicked");
-    String message = "Remember this code!";
-    // Speak the message in a new thread
-    Task<Void> speakTask =
-        new Task<Void>() {
-          @Override
-          protected Void call() throws Exception {
-            textToSpeech.speak(message);
-            return null;
-          }
-        };
-    Thread speakThread = new Thread(speakTask);
-    speakThread.setDaemon(true);
-    speakThread.start();
-    chatLabel.setText(message);
-    // Generate a random code
-    GameState.Code = Integer.toString((int) (Math.random() * 10000));
-    while (Integer.parseInt(GameState.Code) > 9000 || Integer.parseInt(GameState.Code) < 1000) {
-      GameState.Code = Integer.toString((int) (Math.random() * 10000));
-    }
-    // Display the code and show the pinpad
-    codeLabel.setText(GameState.Code);
-    GameState.isKeyFound = true;
-    pinpad.setVisible(true);
-    speakThread.interrupt();
   }
 
   @FXML
@@ -211,72 +246,37 @@ public class LivingRoomController {
     chatThread.start();
   }
 
+  /**
+   * Handles the click event on the controller.
+   *
+   * @param event the mouse event
+   */
   @FXML
-  private void onGoBack(ActionEvent event) {
-    // Back button action code goes here
-    Button button = (Button) event.getSource();
-    Scene sceneButtonIsIn = button.getScene();
-    sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
-    sceneButtonIsIn.getWindow().sizeToScene();
-  }
-
-  private String[] chatSentences = {
-    "Welcome to the living room!",
-    "Use the riddle's answer to find a code and unlock the door.",
-    "Good Luck!",
-    ""
-  };
-
-  private void updateLabel() {
-    timerLabel.setText(
-        String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
-
-    if (GameState.isTimeReached) {
-      // Timer has reached zero, switch to the desired scene
-      switchToGameOverScene();
-    }
-
-    if (GameState.isInLivingRoom && GameState.isFirstTimeInLivingRoom) {
-      updateChatLabel();
-      GameState.isInLivingRoom = false;
-      GameState.isFirstTimeInLivingRoom = false;
-    }
-  }
-
-  private void switchToGameOverScene() {
-    textToSpeech.terminate();
-
-    Platform.runLater(
-        () -> {
-          Scene currentScene = timerLabel.getScene();
-          if (currentScene != null) {
-            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
-            currentScene.getWindow().sizeToScene();
+  public void clickRocket(MouseEvent event) {
+    System.out.println("controller clicked");
+    String message = "Remember this code!";
+    // Speak the message in a new thread
+    Task<Void> speakTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            textToSpeech.speak(message);
+            return null;
           }
-        });
-  }
-
-  private String getAiHelpMessage() {
-    try {
-      // Run the AI chat and get the response
-      if (!GameState.isKeyFound) {
-        System.out.println("riddle resolved, key not found");
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getKeyHint()));
-      } else {
-        System.out.println("key found");
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getDoorHint()));
-      }
-
-      ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
-      Choice result = chatCompletionResult.getChoices().iterator().next();
-      String helpMessage = result.getChatMessage().getContent();
-      chatCompletionRequest.addMessage(result.getChatMessage());
-      return helpMessage;
-    } catch (ApiProxyException e) {
-      e.printStackTrace();
-      return "Sorry, I couldn't retrieve the help message.";
+        };
+    Thread speakThread = new Thread(speakTask);
+    speakThread.setDaemon(true);
+    speakThread.start();
+    chatLabel.setText(message);
+    // Generate a random code
+    GameState.Code = Integer.toString((int) (Math.random() * 10000));
+    while (Integer.parseInt(GameState.Code) > 9000 || Integer.parseInt(GameState.Code) < 1000) {
+      GameState.Code = Integer.toString((int) (Math.random() * 10000));
     }
+    // Display the code and show the pinpad
+    codeLabel.setText(GameState.Code);
+    GameState.isKeyFound = true;
+    pinpad.setVisible(true);
+    speakThread.interrupt();
   }
 }
