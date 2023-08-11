@@ -82,8 +82,8 @@ public class LivingRoomController {
   @FXML
   public void clickRocket(MouseEvent event) {
     System.out.println("controller clicked");
-
     String message = "Remember this code!";
+    // Speak the message in a new thread
     Task<Void> speakTask =
         new Task<Void>() {
           @Override
@@ -96,10 +96,12 @@ public class LivingRoomController {
     speakThread.setDaemon(true);
     speakThread.start();
     chatLabel.setText(message);
+    // Generate a random code
     GameState.Code = Integer.toString((int) (Math.random() * 10000));
     while (Integer.parseInt(GameState.Code) > 9000) {
       GameState.Code = Integer.toString((int) (Math.random() * 10000));
     }
+    // Display the code and show the pinpad
     codeLabel.setText(GameState.Code);
     GameState.isKeyFound = true;
     pinpad.setVisible(true);
@@ -176,7 +178,9 @@ public class LivingRoomController {
           protected Void call() throws Exception {
             int currentSentenceIndex = 0;
             while (!Thread.currentThread().isInterrupted()) {
+              // Get the sentence to speak
               String sentence = chatSentences[currentSentenceIndex];
+              // Speak the sentence
               Task<Void> speakTask =
                   new Task<Void>() {
                     @Override
@@ -187,26 +191,30 @@ public class LivingRoomController {
                       return null;
                     }
                   };
+                  // Start the speak task in a new thread
               Thread speakThread = new Thread(speakTask);
               speakThread.setDaemon(true);
               speakThread.start();
               speakThread.interrupt();
+              // Update the chat label
               Platform.runLater(
                   () -> {
                     chatLabel.setText(sentence);
                   });
 
+              // Wait for 3 seconds before speaking the next sentence
               if (currentSentenceIndex < chatSentences.length - 1) {
                 currentSentenceIndex++;
                 Thread.sleep(3 * 1000);
               } else {
+                // Once all sentences have been spoken, stop the task
                 Thread.currentThread().interrupt();
               }
             }
             return null;
           }
         };
-
+        // Start the chat task in a new thread
     Thread chatThread = new Thread(chatTask);
     chatThread.setDaemon(true);
     chatThread.start();

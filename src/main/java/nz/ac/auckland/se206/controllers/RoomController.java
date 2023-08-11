@@ -133,6 +133,7 @@ public class RoomController {
           protected Void call() throws Exception {
             try {
               String helpMessage = getAiHelpMessage(); // Get AI-generated help message
+              // Start text to speech
               Task<Void> speakTask =
                   new Task<Void>() {
                     @Override
@@ -143,6 +144,7 @@ public class RoomController {
                       return null;
                     }
                   };
+              // Start textToSpeech task in new thread
               Thread speakThread = new Thread(speakTask);
               speakThread.setDaemon(true);
               speakThread.start();
@@ -170,23 +172,25 @@ public class RoomController {
     timerLabel.setText(
         String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
 
+    // If the player just solved the riddle, get the couch message
     if (GameState.isInRoom && GameState.isRiddleResolved && GameState.isFirstTimeInLivingRoom) {
       String sentence = getAiHelpMessage();
       GameState.isInRoom = false;
+      // Start text to speech
       Task<Void> speakTask =
           new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-
               textToSpeech.speak(sentence);
-
               return null;
             }
           };
+      // Start textToSpeech task in new thread
       Thread speakThread = new Thread(speakTask);
       speakThread.setDaemon(true);
       speakThread.start();
       speakThread.interrupt();
+      // Set the chat label to the couch message
       Platform.runLater(
           () -> {
             chatLabel.setText(sentence);
@@ -271,7 +275,9 @@ public class RoomController {
           protected Void call() throws Exception {
             int currentSentenceIndex = 0;
             while (!Thread.currentThread().isInterrupted()) {
+              // Get the sentence to speak
               String sentence = chatSentences[currentSentenceIndex];
+              // Start text to speech
               Task<Void> speakTask =
                   new Task<Void>() {
                     @Override
@@ -282,15 +288,18 @@ public class RoomController {
                       return null;
                     }
                   };
+              // Start textToSpeech task in new thread
               Thread speakThread = new Thread(speakTask);
               speakThread.setDaemon(true);
               speakThread.start();
               speakThread.interrupt();
+              // Set the chat label to the sentence
               Platform.runLater(
                   () -> {
                     chatLabel.setText(sentence);
                   });
 
+              // Get next sentence
               if (currentSentenceIndex < chatSentences.length - 1) {
                 currentSentenceIndex++;
                 if (currentSentenceIndex == 3) {
@@ -299,13 +308,14 @@ public class RoomController {
                   Thread.sleep(3 * 1000);
                 }
               } else {
+                // Once all sentences have been spoken, stop the thread
                 Thread.currentThread().interrupt();
               }
             }
             return null;
           }
         };
-
+    // Start the AI chat task in a new thread
     chatThread = new Thread(chatTask);
     chatThread.setDaemon(true);
     chatThread.start();

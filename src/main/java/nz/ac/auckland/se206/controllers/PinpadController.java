@@ -197,12 +197,16 @@ public class PinpadController {
 
   @FXML
   private void onEnter() {
+    // Get the answer
     int answer = Integer.parseInt(GameState.Code) + randNum;
     String answerString = Integer.toString(answer);
+    // Get player input
     String input = stripString(textField.getText());
+    // Check if the input is correct
     if (input.equals(answerString)) {
       textToSpeech.terminate();
       GameState.isTimeReached = true;
+      // Switch to the escape scene
       Platform.runLater(
           () -> {
             Scene currentScene = timerLabel3.getScene();
@@ -211,9 +215,11 @@ public class PinpadController {
             }
           });
     } else {
+      // Incorrect answer
       numsEntered = 0;
       textField.setText("Incorrect");
       updateTextField(null);
+      // Speak the answer
       Task<Void> speakTask =
           new Task<Void>() {
             @Override
@@ -224,6 +230,7 @@ public class PinpadController {
               return null;
             }
           };
+      // Create a new thread for the update task and start it
       Thread speakThread = new Thread(speakTask);
       speakThread.setDaemon(true);
       speakThread.start();
