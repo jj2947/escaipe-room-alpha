@@ -25,8 +25,7 @@ import nz.ac.auckland.se206.speech.TextToSpeech;
 /** Controller class for the room view. */
 public class RoomController {
 
-  @FXML private Rectangle door;
-  @FXML private Rectangle window;
+  @FXML private Rectangle couch;
   @FXML private Rectangle computer;
   @FXML private Label timerLabel;
   @FXML private Label chatLabel;
@@ -43,14 +42,14 @@ public class RoomController {
   public void initialize() {
     // Initialization code goes here
     chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(1).setMaxTokens(25);
+        new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(0.5).setMaxTokens(25);
     // Start the timer
     timer = new Timer(timerLabel);
     // Initialize the TextToSpeech instance
     textToSpeech = new TextToSpeech();
     GameState.timer = timer;
     GameState.isGameStarted = true;
-    timer = GameState.timer;
+    GameState.isInRoom = true;
 
     // Update the timer label every second
     Task<Void> updateLabelTask =
@@ -70,12 +69,10 @@ public class RoomController {
     updateThread.setDaemon(true);
     updateThread.start();
 
-    // Set up and start the chatLabel task
     Task<Void> chatTask =
         new Task<Void>() {
           @Override
           protected Void call() throws Exception {
-            chatLabel.setFont(javafx.scene.text.Font.font("Arial Rounded MT Bold", 20));
             int currentSentenceIndex = 0;
             while (!Thread.currentThread().isInterrupted()) {
               String sentence = chatSentences[currentSentenceIndex];
@@ -139,30 +136,23 @@ public class RoomController {
   }
 
   /**
-   * Handles the click event on the door.
+   * Handles the click event on the couch.
    *
    * @param event the mouse event
    * @throws IOException if there is an error loading the chat view
    */
   @FXML
-  public void clickDoor(MouseEvent event) throws IOException {
-    System.out.println("door clicked");
+  public void clickCouch(MouseEvent event) throws IOException {
+    System.out.println("couch clicked");
 
-    if (!GameState.isRiddleResolved) {
-      // showDialog("Info", "Riddle", "You need to resolve the riddle!");
+    if (GameState.isRiddleResolved) {
       Rectangle rectangle = (Rectangle) event.getSource();
       Scene sceneRectangleIsIn = rectangle.getScene();
-      chatLabel.setText("");
-      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
+      GameState.isInRoom = false;
+      GameState.isInLivingRoom = true;
+      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.LIVING_ROOM));
+      sceneRectangleIsIn.getWindow().sizeToScene();
       return;
-    }
-
-    if (!GameState.isKeyFound) {
-      clickHelpButton(null);
-    } else {
-      Rectangle rectangle = (Rectangle) event.getSource();
-      Scene sceneRectangleIsIn = rectangle.getScene();
-      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
     }
   }
 
@@ -174,44 +164,28 @@ public class RoomController {
   @FXML
   public void clickComputer(MouseEvent event) {
     System.out.println("computer clicked");
-    if (GameState.isRiddleResolved && !GameState.isKeyFound) {
-      chatLabel.setFont(javafx.scene.text.Font.font("Arial Rounded MT Bold", 20));
-      String message = "Use this code to escape!";
-      Task<Void> speakTask =
-          new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
 
-              textToSpeech.speak(message);
-
-              return null;
-            }
-          };
-      Thread speakThread = new Thread(speakTask);
-      speakThread.setDaemon(true);
-      speakThread.start();
-      chatLabel.setText(message);
-      GameState.Code = "4 9 1 6";
-      codeLabel.setText("4916");
-      GameState.isKeyFound = true;
-      speakThread.interrupt();
-    }
-  }
-
-  /**
-   * Handles the click event on the window.
-   *
-   * @param event the mouse event
-   */
-  @FXML
-  public void clickWindow(MouseEvent event) {
-    System.out.println("window clicked");
+    Rectangle rectangle = (Rectangle) event.getSource();
+    Scene sceneRectangleIsIn = rectangle.getScene();
+    GameState.isInRoom = false;
+    chatLabel.setText("");
+    sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
+    // Resizing the window so the larger scene fits
+    sceneRectangleIsIn.getWindow().sizeToScene();
   }
 
   private void updateLabel() {
     timerLabel.setText(
         String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
 
+    if (GameState.isInRoom && GameState.isRiddleResolved && GameState.isFirstTimeInLivingRoom) {
+      String sentence = getAIHelpMessage();
+      GameState.isInRoom = false;
+      Platform.runLater(
+          () -> {
+            chatLabel.setText(sentence);
+          });
+    }
     if (GameState.isTimeReached) {
       // Timer has reached zero, switch to the desired scene
       switchToGameOverScene();
@@ -226,7 +200,6 @@ public class RoomController {
     helpButton.setDisable(true);
 
     // Set the chat label to loading message
-    chatLabel.setFont(javafx.scene.text.Font.font("Chalkduster", 20));
     chatLabel.setText("Loading...");
 
     // Run the AI chat in the background
@@ -236,20 +209,6 @@ public class RoomController {
           protected Void call() throws Exception {
             try {
               String helpMessage = getAIHelpMessage(); // Get AI-generated help message
-              Task<Void> speakTask =
-                  new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-
-                      textToSpeech.speak(helpMessage);
-
-                      return null;
-                    }
-                  };
-              Thread speakThread = new Thread(speakTask);
-              speakThread.setDaemon(true);
-              speakThread.start();
-              speakThread.interrupt();
               Platform.runLater(
                   () -> {
                     chatLabel.setText(helpMessage);
@@ -272,15 +231,13 @@ public class RoomController {
 
   private void switchToGameOverScene() {
 
-    chatThread.interrupt();
-    updateThread.interrupt();
     textToSpeech.terminate();
-
     Platform.runLater(
         () -> {
           Scene currentScene = timerLabel.getScene();
           if (currentScene != null) {
             currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+            currentScene.getWindow().sizeToScene();
             chatLabel.setText("");
           }
         });
@@ -289,21 +246,17 @@ public class RoomController {
   private String[] chatSentences = {
     "Welcome to the escape room!",
     "You have 2 minutes to escape the room.",
-    "If you get stuck, use the Help button to ask the game master for a clue!",
+    "If you get stuck, use the Hint button to ask the game master for a clue!",
     ""
   };
 
   private String getAIHelpMessage() {
     try {
       // Run the AI chat and get the response
-      if (!GameState.isKeyFound && GameState.isRiddleResolved) {
-        System.out.println("key not found, riddle resolved");
+      if (GameState.isRiddleResolved) {
         chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getKeyHint()));
-      } else if (GameState.isRiddleResolved && GameState.isKeyFound) {
-        System.out.println("key found, riddle resolved");
-        chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getDoorHint()));
+            new ChatMessage("user", GptPromptEngineering.getCouchHint()));
+        System.out.println("riddle resolved");
       } else {
         System.out.println("key not found, riddle not resolved");
         chatCompletionRequest.addMessage(
@@ -313,6 +266,7 @@ public class RoomController {
       ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
       Choice result = chatCompletionResult.getChoices().iterator().next();
       String helpMessage = result.getChatMessage().getContent();
+      chatCompletionRequest.addMessage(result.getChatMessage());
       return helpMessage;
     } catch (ApiProxyException e) {
       e.printStackTrace();
