@@ -15,6 +15,12 @@ public class GameState {
 
   public static boolean isGameStarted = false;
 
+  public static boolean isInRoom = false;
+
+  public static boolean isInLivingRoom = false;
+
+  public static boolean isFirstTimeInLivingRoom = true;
+
   public static Timer timer;
 
   public static String Code;
