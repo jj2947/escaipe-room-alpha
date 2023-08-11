@@ -143,6 +143,7 @@ public class PinpadController {
   private void updateTextField(String number) {
     chatLabel.setText("");
 
+    // Change the buttons enabled based on the number of digits entered
     if (number == null) {
       enterButton.disableProperty().setValue(true);
       oneButton.disableProperty().setValue(false);
@@ -159,6 +160,7 @@ public class PinpadController {
     }
     numsEntered++;
 
+    // Update the text field based on the number of digits entered
     if (numsEntered == 1) {
       textField.setText(number + " _ _ _");
     } else if (numsEntered == 2) {
@@ -166,6 +168,7 @@ public class PinpadController {
     } else if (numsEntered == 3) {
       textField.setText(textField.getText().substring(0, 4) + number + " _");
     } else if (numsEntered == 4) {
+      // Enable the enter button
       enterButton.disableProperty().setValue(false);
       enterButton.requestFocus();
       textField.setText(textField.getText().substring(0, 6) + number);

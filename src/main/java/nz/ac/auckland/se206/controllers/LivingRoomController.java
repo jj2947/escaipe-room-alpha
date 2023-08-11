@@ -63,52 +63,6 @@ public class LivingRoomController {
   }
 
   @FXML
-  public void clickDoor(MouseEvent event) {
-    System.out.println("door clicked");
-    if (GameState.isKeyFound) {
-      Scene sceneButtonIsIn = door.getScene();
-      sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
-      sceneButtonIsIn.getWindow().sizeToScene();
-    } else {
-      chatLabel.setText("You need to use the riddle to find the code first!");
-    }
-  }
-
-  /**
-   * Handles the click event on the controller.
-   *
-   * @param event the mouse event
-   */
-  @FXML
-  public void clickRocket(MouseEvent event) {
-    System.out.println("controller clicked");
-    String message = "Remember this code!";
-    // Speak the message in a new thread
-    Task<Void> speakTask =
-        new Task<Void>() {
-          @Override
-          protected Void call() throws Exception {
-            textToSpeech.speak(message);
-            return null;
-          }
-        };
-    Thread speakThread = new Thread(speakTask);
-    speakThread.setDaemon(true);
-    speakThread.start();
-    chatLabel.setText(message);
-    // Generate a random code
-    GameState.Code = Integer.toString((int) (Math.random() * 10000));
-    while (Integer.parseInt(GameState.Code) > 9000) {
-      GameState.Code = Integer.toString((int) (Math.random() * 10000));
-    }
-    // Display the code and show the pinpad
-    codeLabel.setText(GameState.Code);
-    GameState.isKeyFound = true;
-    pinpad.setVisible(true);
-    speakThread.interrupt();
-  }
-
-  @FXML
   private void onGoBack(ActionEvent event) {
     // Back button action code goes here
     Button button = (Button) event.getSource();
@@ -168,6 +122,52 @@ public class LivingRoomController {
     aiChatThread.setDaemon(true);
     aiChatThread.start();
     aiChatThread.interrupt();
+  }
+
+  @FXML
+  public void clickDoor(MouseEvent event) {
+    System.out.println("door clicked");
+    if (GameState.isKeyFound) {
+      Scene sceneButtonIsIn = door.getScene();
+      sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.PINPAD));
+      sceneButtonIsIn.getWindow().sizeToScene();
+    } else {
+      chatLabel.setText("You need to use the riddle to find the code first!");
+    }
+  }
+
+  /**
+   * Handles the click event on the controller.
+   *
+   * @param event the mouse event
+   */
+  @FXML
+  public void clickRocket(MouseEvent event) {
+    System.out.println("controller clicked");
+    String message = "Remember this code!";
+    // Speak the message in a new thread
+    Task<Void> speakTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            textToSpeech.speak(message);
+            return null;
+          }
+        };
+    Thread speakThread = new Thread(speakTask);
+    speakThread.setDaemon(true);
+    speakThread.start();
+    chatLabel.setText(message);
+    // Generate a random code
+    GameState.Code = Integer.toString((int) (Math.random() * 10000));
+    while (Integer.parseInt(GameState.Code) > 9000) {
+      GameState.Code = Integer.toString((int) (Math.random() * 10000));
+    }
+    // Display the code and show the pinpad
+    codeLabel.setText(GameState.Code);
+    GameState.isKeyFound = true;
+    pinpad.setVisible(true);
+    speakThread.interrupt();
   }
 
   private void updateChatLabel() {
