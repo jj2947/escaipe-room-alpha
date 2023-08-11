@@ -43,8 +43,7 @@ public class ChatController {
   @FXML
   public void initialize() throws ApiProxyException {
     chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(0.2).setTopP(0.4).setMaxTokens(100);
-    chatTextArea.setEditable(false);
+        new ChatCompletionRequest().setN(1).setTemperature(0.6).setTopP(0.4).setMaxTokens(100);
     appendChatMessage(
         new ChatMessage("assistant", "Solve the riddle to find the key and escape the room!"));
     Task<Void> initializeTask =
@@ -53,7 +52,7 @@ public class ChatController {
           protected Void call() throws Exception {
             // Your initialization code here
             runGpt(
-                new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("computer")));
+                new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("rocket")));
             timer = GameState.timer;
 
             // Update the timer label every second
@@ -73,7 +72,6 @@ public class ChatController {
             updateThread = new Thread(updateLabelTask);
             updateThread.setDaemon(true);
             updateThread.start();
-
             return null;
           }
         };
@@ -155,9 +153,6 @@ public class ChatController {
     inputText.clear();
     ChatMessage msg = new ChatMessage("user", message);
     appendChatMessage(msg);
-
-    chatTextArea.setEditable(false);
-
     runGpt(msg);
   }
 
@@ -172,7 +167,9 @@ public class ChatController {
   private void onGoBack(ActionEvent event) throws ApiProxyException, IOException {
     Button button = (Button) event.getSource();
     Scene sceneButtonIsIn = button.getScene();
+    GameState.isInRoom = true;
     sceneButtonIsIn.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
+    sceneButtonIsIn.getWindow().sizeToScene();
   }
 
   private void updateLabel() {
@@ -189,9 +186,6 @@ public class ChatController {
   }
 
   private void switchToGameOverScene() {
-    runGptThread.interrupt();
-    updateThread.interrupt();
-    initializeThread.interrupt();
     // Get the root of the game over scene and set it as the new root
     Platform.runLater(
         () -> {
