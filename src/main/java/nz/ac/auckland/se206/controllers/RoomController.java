@@ -51,6 +51,13 @@ public class RoomController {
     GameState.isGameStarted = true;
     GameState.isInRoom = true;
 
+    // Schedule the updateLabelTask to start after the room view is initialized
+    Platform.runLater(() -> startUpdateLabelTask());
+    // Schedule the chat task to start after the room view is initialized
+    Platform.runLater(() -> startChatTask());
+  }
+
+  private void startUpdateLabelTask() {
     // Update the timer label every second
     Task<Void> updateLabelTask =
         new Task<Void>() {
@@ -68,7 +75,10 @@ public class RoomController {
     updateThread = new Thread(updateLabelTask);
     updateThread.setDaemon(true);
     updateThread.start();
+  }
 
+  private void startChatTask() {
+    // Run the AI chat in the background
     Task<Void> chatTask =
         new Task<Void>() {
           @Override
