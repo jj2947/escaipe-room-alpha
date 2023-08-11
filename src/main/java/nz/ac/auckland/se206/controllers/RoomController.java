@@ -77,45 +77,6 @@ public class RoomController {
     System.out.println("key " + event.getCode() + " released");
   }
 
-  /**
-   * Handles the click event on the computer.
-   *
-   * @param event the mouse event
-   */
-  @FXML
-  public void clickComputer(MouseEvent event) {
-    System.out.println("computer clicked");
-
-    Rectangle rectangle = (Rectangle) event.getSource();
-    Scene sceneRectangleIsIn = rectangle.getScene();
-    GameState.isInRoom = false;
-    chatLabel.setText("");
-    sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
-    // Resizing the window so the larger scene fits
-    sceneRectangleIsIn.getWindow().sizeToScene();
-  }
-
-  /**
-   * Handles the click event on the couch.
-   *
-   * @param event the mouse event
-   * @throws IOException if there is an error loading the chat view
-   */
-  @FXML
-  public void clickCouch(MouseEvent event) throws IOException {
-    System.out.println("couch clicked");
-
-    if (GameState.isRiddleResolved) {
-      Rectangle rectangle = (Rectangle) event.getSource();
-      Scene sceneRectangleIsIn = rectangle.getScene();
-      GameState.isInRoom = false;
-      GameState.isInLivingRoom = true;
-      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.LIVING_ROOM));
-      sceneRectangleIsIn.getWindow().sizeToScene();
-      return;
-    }
-  }
-
   @FXML
   private void onClickHelpButton(ActionEvent event) {
     System.out.println("help button clicked");
@@ -168,6 +129,45 @@ public class RoomController {
     aiChatThread.start();
   }
 
+  /**
+   * Handles the click event on the computer.
+   *
+   * @param event the mouse event
+   */
+  @FXML
+  public void clickComputer(MouseEvent event) {
+    System.out.println("computer clicked");
+
+    Rectangle rectangle = (Rectangle) event.getSource();
+    Scene sceneRectangleIsIn = rectangle.getScene();
+    GameState.isInRoom = false;
+    chatLabel.setText("");
+    sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.CHAT));
+    // Resizing the window so the larger scene fits
+    sceneRectangleIsIn.getWindow().sizeToScene();
+  }
+
+  /**
+   * Handles the click event on the couch.
+   *
+   * @param event the mouse event
+   * @throws IOException if there is an error loading the chat view
+   */
+  @FXML
+  public void clickCouch(MouseEvent event) throws IOException {
+    System.out.println("couch clicked");
+
+    if (GameState.isRiddleResolved) {
+      Rectangle rectangle = (Rectangle) event.getSource();
+      Scene sceneRectangleIsIn = rectangle.getScene();
+      GameState.isInRoom = false;
+      GameState.isInLivingRoom = true;
+      sceneRectangleIsIn.setRoot(SceneManager.getUiRoot(AppUi.LIVING_ROOM));
+      sceneRectangleIsIn.getWindow().sizeToScene();
+      return;
+    }
+  }
+
   private void updateLabel() {
     timerLabel.setText(
         String.format("%02d:%02d", timer.getCounter() / 60, timer.getCounter() % 60));
@@ -202,6 +202,28 @@ public class RoomController {
     }
   }
 
+  private void switchToGameOverScene() {
+
+    textToSpeech.terminate();
+    Platform.runLater(
+        () -> {
+          Scene currentScene = timerLabel.getScene();
+          if (currentScene != null) {
+            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+            currentScene.getWindow().sizeToScene();
+            chatLabel.setText("");
+          }
+        });
+  }
+  
+
+  private String[] chatSentences = {
+    "Welcome to the escape room!",
+    "You have 2 minutes to escape the room.",
+    "If you get stuck, use the Hint button to ask the game master for a clue!",
+    ""
+  };
+
   private String getAiHelpMessage() {
     try {
       // Run the AI chat and get the response
@@ -224,47 +246,6 @@ public class RoomController {
       e.printStackTrace();
       return "Sorry, I couldn't retrieve the help message.";
     }
-  }
-
-  private void switchToGameOverScene() {
-
-    textToSpeech.terminate();
-    Platform.runLater(
-        () -> {
-          Scene currentScene = timerLabel.getScene();
-          if (currentScene != null) {
-            currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
-            currentScene.getWindow().sizeToScene();
-            chatLabel.setText("");
-          }
-        });
-  }
-
-  private String[] chatSentences = {
-    "Welcome to the escape room!",
-    "You have 2 minutes to escape the room.",
-    "If you get stuck, use the Hint button to ask the game master for a clue!",
-    ""
-  };
-
-  private void startUpdateLabelTask() {
-    // Update the timer label every second
-    Task<Void> updateLabelTask =
-        new Task<Void>() {
-          @Override
-          protected Void call() throws Exception {
-            while (!GameState.isTimeReached) {
-              Thread.sleep(1000); // Wait for 1 second
-              Platform.runLater(() -> updateLabel());
-            }
-            return null;
-          }
-        };
-
-    // Create a new thread for the update task and start it
-    updateThread = new Thread(updateLabelTask);
-    updateThread.setDaemon(true);
-    updateThread.start();
   }
 
   private void startChatTask() {
@@ -319,5 +300,25 @@ public class RoomController {
     chatThread = new Thread(chatTask);
     chatThread.setDaemon(true);
     chatThread.start();
+  }
+
+  private void startUpdateLabelTask() {
+    // Update the timer label every second
+    Task<Void> updateLabelTask =
+        new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            while (!GameState.isTimeReached) {
+              Thread.sleep(1000); // Wait for 1 second
+              Platform.runLater(() -> updateLabel());
+            }
+            return null;
+          }
+        };
+
+    // Create a new thread for the update task and start it
+    updateThread = new Thread(updateLabelTask);
+    updateThread.setDaemon(true);
+    updateThread.start();
   }
 }
