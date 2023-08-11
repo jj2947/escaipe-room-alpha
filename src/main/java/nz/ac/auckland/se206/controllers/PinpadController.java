@@ -10,12 +10,7 @@ import javafx.scene.control.TextField;
 import nz.ac.auckland.se206.GameState;
 import nz.ac.auckland.se206.SceneManager;
 import nz.ac.auckland.se206.SceneManager.AppUi;
-import nz.ac.auckland.se206.gpt.ChatMessage;
-import nz.ac.auckland.se206.gpt.GptPromptEngineering;
-import nz.ac.auckland.se206.gpt.openai.ApiProxyException;
-import nz.ac.auckland.se206.gpt.openai.ChatCompletionRequest;
-import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult;
-import nz.ac.auckland.se206.gpt.openai.ChatCompletionResult.Choice;
+import nz.ac.auckland.se206.speech.TextToSpeech;
 
 public class PinpadController {
 
@@ -28,6 +23,7 @@ public class PinpadController {
   @FXML private Button sevenButton;
   @FXML private Button eightButton;
   @FXML private Button nineButton;
+  @FXML private Button zeroButton;
   @FXML private Button enterButton;
   @FXML private TextField textField;
   @FXML private Label timerLabel3;
@@ -36,18 +32,20 @@ public class PinpadController {
   @FXML private Button clearButton;
   @FXML private Label chatLabel;
   private Timer timer;
-  private ChatCompletionRequest chatCompletionRequest;
   private int numsEntered = 0;
   private Thread updateThread;
-  private Thread aiChatThread;
+  private int randNum;
+  private TextToSpeech textToSpeech;
 
   public void initialize() {
-    // Initialization code goes here
-    chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(1).setMaxTokens(25);
+    System.out.println("pinpad controller initialized");
+    textToSpeech = new TextToSpeech();
     // Start the timer
     timer = GameState.timer;
     enterButton.disableProperty().setValue(true);
+
+    randNum = (int) (Math.random() * 100);
+    chatLabel.setText("What is the code + " + randNum + "?");
 
     // Update the timer label every second
     Task<Void> updateLabelTask =
@@ -79,13 +77,14 @@ public class PinpadController {
   }
 
   private void switchToGameOverScene() {
-    aiChatThread.interrupt();
     updateThread.interrupt();
+    textToSpeech.terminate();
     Platform.runLater(
         () -> {
           Scene currentScene = timerLabel3.getScene();
           if (currentScene != null) {
             currentScene.setRoot(SceneManager.getUiRoot(AppUi.LOST));
+            currentScene.getWindow().sizeToScene();
           }
         });
   }
@@ -94,54 +93,9 @@ public class PinpadController {
   public void onClickHelp() {
     System.out.println("help button clicked");
 
-    // Disable the help button temporarily to prevent multiple clicks
-    helpButton.setDisable(true);
-
     textField.setText("");
     numsEntered = 0;
-    // Set the chat label to loading message
-    chatLabel.setText("Loading...");
-
-    // Run the AI chat in the background
-    Task<Void> aiChatTask =
-        new Task<Void>() {
-          @Override
-          protected Void call() throws Exception {
-            try {
-              String helpMessage = getAIHelpMessage(); // Get AI-generated help message
-              Platform.runLater(
-                  () -> {
-                    chatLabel.setText(helpMessage);
-                  });
-            } catch (Exception e) {
-              e.printStackTrace();
-            } finally {
-              // Re-enable the help button
-              Platform.runLater(() -> helpButton.setDisable(false));
-            }
-            return null;
-          }
-
-          private String getAIHelpMessage() {
-            try {
-              chatCompletionRequest.addMessage(
-                  new ChatMessage("user", GptPromptEngineering.getCodeHint()));
-
-              ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
-              Choice result = chatCompletionResult.getChoices().iterator().next();
-              String helpMessage = result.getChatMessage().getContent();
-              return helpMessage;
-            } catch (ApiProxyException e) {
-              e.printStackTrace();
-              return "Sorry, I couldn't retrieve the help message.";
-            }
-          }
-        };
-
-    // Start the AI chat task in a new thread
-    aiChatThread = new Thread(aiChatTask);
-    aiChatThread.setDaemon(true);
-    aiChatThread.start();
+    chatLabel.setText("What is the code + " + randNum + "?");
   }
 
   @FXML
@@ -189,6 +143,11 @@ public class PinpadController {
     updateTextField("9");
   }
 
+  @FXML
+  public void onClickZero() {
+    updateTextField("0");
+  }
+
   private void updateTextField(String number) {
     chatLabel.setText("");
 
@@ -203,6 +162,7 @@ public class PinpadController {
       sevenButton.disableProperty().setValue(false);
       eightButton.disableProperty().setValue(false);
       nineButton.disableProperty().setValue(false);
+      zeroButton.disableProperty().setValue(false);
       return;
     }
     numsEntered++;
@@ -210,7 +170,7 @@ public class PinpadController {
     if (numsEntered == 1) {
       textField.setText(number + " _ _ _");
     } else if (numsEntered == 2) {
-      textField.setText(textField.getText().charAt(0) +" " + number + " _ _");
+      textField.setText(textField.getText().charAt(0) + " " + number + " _ _");
     } else if (numsEntered == 3) {
       textField.setText(textField.getText().substring(0, 4) + number + " _");
     } else if (numsEntered == 4) {
@@ -226,8 +186,8 @@ public class PinpadController {
       sevenButton.disableProperty().setValue(true);
       eightButton.disableProperty().setValue(true);
       nineButton.disableProperty().setValue(true);
+      zeroButton.disableProperty().setValue(true);
     } else {
-      textField.setText("Incorrect");
       numsEntered = 0;
       enterButton.disableProperty().setValue(true);
       oneButton.disableProperty().setValue(false);
@@ -239,12 +199,17 @@ public class PinpadController {
       sevenButton.disableProperty().setValue(false);
       eightButton.disableProperty().setValue(false);
       nineButton.disableProperty().setValue(false);
+      zeroButton.disableProperty().setValue(false);
     }
   }
 
   @FXML
   public void onEnter() {
-    if (textField.getText().equals(GameState.Code)) {
+    int answer = Integer.parseInt(GameState.Code) + randNum;
+    String answerString = Integer.toString(answer);
+    String input = stripString(textField.getText());
+    if (input.equals(answerString)) {
+      textToSpeech.terminate();
       GameState.isTimeReached = true;
       Platform.runLater(
           () -> {
@@ -257,6 +222,20 @@ public class PinpadController {
       numsEntered = 0;
       textField.setText("Incorrect");
       updateTextField(null);
+      Task<Void> speakTask =
+          new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+              textToSpeech.speak("Incorrect");
+
+              return null;
+            }
+          };
+      Thread speakThread = new Thread(speakTask);
+      speakThread.setDaemon(true);
+      speakThread.start();
+      speakThread.interrupt();
     }
   }
 
@@ -265,7 +244,8 @@ public class PinpadController {
     Scene currentScene = timerLabel3.getScene();
     Platform.runLater(
         () -> {
-          currentScene.setRoot(SceneManager.getUiRoot(AppUi.ROOM));
+          currentScene.setRoot(SceneManager.getUiRoot(AppUi.LIVING_ROOM));
+          currentScene.getWindow().sizeToScene();
         });
   }
 
@@ -274,5 +254,9 @@ public class PinpadController {
     numsEntered = 0;
     textField.setText("_ _ _ _");
     updateTextField(null);
+  }
+
+  private String stripString(String str) {
+    return str.replaceAll("[^a-zA-Z0-9]", "");
   }
 }
