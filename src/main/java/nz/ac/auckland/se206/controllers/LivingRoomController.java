@@ -86,11 +86,11 @@ public class LivingRoomController {
       if (!GameState.isKeyFound) {
         System.out.println("riddle resolved, key not found");
         chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getKeyHint()));
+            new ChatMessage("assistant", GptPromptEngineering.getKeyHint()));
       } else {
         System.out.println("key found");
         chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getDoorHint()));
+            new ChatMessage("assistant", GptPromptEngineering.getDoorHint()));
       }
 
       ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();

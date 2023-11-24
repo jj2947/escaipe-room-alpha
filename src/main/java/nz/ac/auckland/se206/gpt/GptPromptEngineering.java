@@ -15,11 +15,11 @@ public class GptPromptEngineering {
         + " player a riddle with"
         + " answer "
         + wordToGuess
-        + ". Do not ask the user for answer. Only after the user replies and only if their answer"
-        + " is correct, you should respond with the word Correct and a short funny congratulatory"
-        + " message that tells the user to go back to room and contains a rocket fact. Only if they"
-        + " ask or guess incorrectly, give them a hint. You must never reveal the answer to the"
-        + " player.";
+        + ". Do not ask the user for answer or have an introduction. Only after the user replies"
+        + " and only if their answer is correct, you should respond with the word Correct and a"
+        + " short funny congratulatory message that tells the user to go back to room and contains"
+        + " a rocket fact. Only if they ask or guess incorrectly, give them a hint. You must never"
+        + " reveal the answer to the player.";
   }
 
   public static String getCouchHint() {

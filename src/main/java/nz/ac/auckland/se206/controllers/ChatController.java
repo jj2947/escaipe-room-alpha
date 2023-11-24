@@ -43,7 +43,7 @@ public class ChatController {
   @FXML
   public void initialize() throws ApiProxyException {
     chatCompletionRequest =
-        new ChatCompletionRequest().setN(1).setTemperature(0.5).setTopP(0.3).setMaxTokens(50);
+        new ChatCompletionRequest().setN(1).setTemperature(0.5).setTopP(0.3).setMaxTokens(100);
     appendChatMessage(
         new ChatMessage("assistant", "Solve the riddle to find the key and escape the room!"));
     Task<Void> initializeTask =
@@ -51,7 +51,7 @@ public class ChatController {
           @Override
           protected Void call() throws Exception {
             // Your initialization code here
-            runGpt(new ChatMessage("user", GptPromptEngineering.getRiddleWithGivenWord("rocket")));
+            runGpt(new ChatMessage("assistant", GptPromptEngineering.getRiddleWithGivenWord("rocket")));
             timer = GameState.timer;
 
             // Update the timer label every second

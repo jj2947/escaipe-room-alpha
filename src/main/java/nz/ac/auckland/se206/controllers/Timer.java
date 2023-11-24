@@ -10,10 +10,9 @@ public class Timer {
 
   public Timer(Label timerLabel) {
     this.timerLabel = timerLabel;
-    startTimer();
   }
 
-  private void startTimer() {
+  public void startTimer() {
     counter = 120; // Set the initial value of the counter to 2 minutes (120 seconds)
     updateLabel();
 

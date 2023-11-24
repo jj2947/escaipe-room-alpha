@@ -43,10 +43,10 @@ public class RoomController {
     // Initialization code goes here
     chatCompletionRequest =
         new ChatCompletionRequest().setN(1).setTemperature(1).setTopP(0.5).setMaxTokens(25);
-    // Start the timer
-    timer = new Timer(timerLabel);
     // Initialize the TextToSpeech instance
     textToSpeech = new TextToSpeech();
+    // Start the timer
+    timer = new Timer(timerLabel);
     GameState.timer = timer;
     GameState.isGameStarted = true;
     GameState.isInRoom = true;
@@ -89,12 +89,12 @@ public class RoomController {
       // Run the AI chat and get the response
       if (GameState.isRiddleResolved) {
         chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getCouchHint()));
+            new ChatMessage("assistant", GptPromptEngineering.getCouchHint()));
         System.out.println("riddle resolved");
       } else {
         System.out.println("key not found, riddle not resolved");
         chatCompletionRequest.addMessage(
-            new ChatMessage("user", GptPromptEngineering.getStartHint()));
+            new ChatMessage("assistant", GptPromptEngineering.getStartHint()));
       }
 
       ChatCompletionResult chatCompletionResult = chatCompletionRequest.execute();
@@ -163,6 +163,7 @@ public class RoomController {
   }
 
   private void startUpdateLabelTask() {
+    timer.startTimer();
     // Update the timer label every second
     Task<Void> updateLabelTask =
         new Task<Void>() {
@@ -188,7 +189,7 @@ public class RoomController {
 
     // If the player just solved the riddle, get the couch message
     if (GameState.isInRoom && GameState.isRiddleResolved && GameState.isFirstTimeInLivingRoom) {
-      String sentence = getAiHelpMessage();
+      String sentence = "Sit on the couch to teleport out!";
       GameState.isInRoom = false;
       // Start text to speech
       Task<Void> speakTask =
